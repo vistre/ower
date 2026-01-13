@@ -2,9 +2,10 @@
  * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
  * Leo Bennett 专属优化版
  * * 🛠️ 优化日志：
- * 1. [体验] "手动切换" 增加热门地区白名单，不再显示冷门节点
- * 2. [体验] 流媒体策略组 (YouTube/Netflix) 默认优先使用 "自动选择"，不再优先 "低倍率"
- * 3. [维护] 保持之前的 DNS/NTP/Fastly 加速等所有核心优化
+ * 1. [规范] 全局命名标准化：废除 "狮城节点"，统一使用 "新加坡节点"
+ * 2. [体验] "手动切换" 增加热门地区白名单，不再显示冷门节点
+ * 3. [体验] 流媒体策略组 (YouTube/Netflix) 默认优先使用 "自动选择"
+ * 4. [维护] 保持 DNS/NTP/Fastly 加速/Chrome 指纹等核心优化
  */
 
 function main(config) {
@@ -148,6 +149,7 @@ function main(config) {
         name: "节点选择",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
         type: "select",
+        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点", 
           "手动切换", "低倍率节点", "其他地区", "DIRECT"
@@ -173,8 +175,9 @@ function main(config) {
         name: "OpenAI",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png",
         type: "select",
+        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
-          "Google/Gemini", "美国节点", "日本节点", "狮城节点",
+          "Google/Gemini", "美国节点", "日本节点", "新加坡节点",
           "台湾节点", "韩国节点", "其他地区"
         ]
       },
@@ -192,19 +195,19 @@ function main(config) {
         name: "油管视频",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png",
         type: "select",
-        // [优化] 将 "自动选择" 提权到第一位
+        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "自动选择", "节点选择", "香港节点", "台湾节点",
-          "狮城节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
+          "新加坡节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
         ]
       },
       {
         name: "奈飞视频",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png",
         type: "select",
-        // [优化] 将 "自动选择" 提权到第一位
+        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
-          "自动选择", "节点选择", "狮城节点", "香港节点",
+          "自动选择", "节点选择", "新加坡节点", "香港节点",
           "台湾节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
         ]
       },
@@ -212,10 +215,10 @@ function main(config) {
         name: "国外媒体",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png",
         type: "select",
-        // [优化] 将 "自动选择" 提权到第一位
+        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "自动选择", "节点选择", "香港节点", "台湾节点",
-          "狮城节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
+          "新加坡节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
         ]
       },
       {
@@ -244,8 +247,9 @@ function main(config) {
         name: "电报消息",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
         type: "select",
+        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
-          "自动选择", "节点选择", "狮城节点", "香港节点", "台湾节点",
+          "自动选择", "节点选择", "新加坡节点", "香港节点", "台湾节点",
           "日本节点", "美国节点", "韩国节点", "其他地区"
         ]
       },
@@ -265,7 +269,10 @@ function main(config) {
         name: "谷歌FCM",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png",
         type: "select",
-        proxies: ["DIRECT", "节点选择", "美国节点", "香港节点", "台湾节点", "日本节点", "狮城节点"]
+        // [规范化] 狮城节点 -> 新加坡节点
+        proxies: [
+          "DIRECT", "节点选择", "美国节点", "香港节点", "台湾节点", "日本节点", "新加坡节点"
+        ]
       },
       {
         name: "游戏平台",
@@ -326,11 +333,13 @@ function main(config) {
         interval: 300,
         tolerance: 50
       },
+      // [规范化] 组名：狮城节点 -> 新加坡节点
       {
-        name: "狮城节点",
+        name: "新加坡节点",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png",
         type: "url-test",
         "include-all": true,
+        // Filter 保持原样以抓取所有别名
         filter: "(?i)(新加坡|狮城|Singapore|SG|🇸🇬)(?!.*(" + excludeFilter + "))",
         interval: 300,
         tolerance: 50
@@ -349,11 +358,10 @@ function main(config) {
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
         type: "select",
         "include-all": true,
-        // 排除掉热门地区和垃圾节点，剩下的就是真正的冷门地区
         filter: "^(?!.*((?i)香港|Hong Kong|HK|🇭🇰|日本|Japan|JP|🇯🇵|美国|USA|States|US(?!tralia|tria)|🇺🇸|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|🇸🇬|韩国|Korea|KR|🇰🇷|" + excludeFilter + ")).*$"
       },
       
-      // [优化] 手动切换：仅显示热门地区，确保默认节点是热门的
+      // 手动切换
       {
         name: "手动切换",
         icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png",
