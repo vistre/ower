@@ -1,10 +1,10 @@
 /**
  * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
  * Leo Bennett 专属优化版
- * * 🛠️ 修复日志：
- * 1. [关键] 修复 rules[0] DST-PORT 语法错误 (移除 /UDP 后缀)
- * 2. [关键] 增加 JSON 序列化清洗，防止 Map 类型错误
- * 3. [关键] 增加 try-catch 全局捕获
+ * * 🛠️ 优化日志：
+ * 1. [体验] "手动切换" 增加热门地区白名单，不再显示冷门节点
+ * 2. [体验] 流媒体策略组 (YouTube/Netflix) 默认优先使用 "自动选择"，不再优先 "低倍率"
+ * 3. [维护] 保持之前的 DNS/NTP/Fastly 加速等所有核心优化
  */
 
 function main(config) {
@@ -76,7 +76,7 @@ function main(config) {
     };
 
     // ==============================================================================
-    // 3. 规则源 (Rule Providers) - 使用 Fastly 加速
+    // 3. 规则源 (Rule Providers) - Fastly 加速
     // ==============================================================================
     var ruleProviderBase = {
       behavior: "classical",
@@ -126,7 +126,6 @@ function main(config) {
     var myRuleProviders = {};
     for (var key in providersDef) {
       if (Object.prototype.hasOwnProperty.call(providersDef, key)) {
-         // 使用 Object.assign 替代 Spread Operator 确保兼容性
          myRuleProviders[key] = Object.assign({}, ruleProviderBase, providersDef[key]);
       }
     }
@@ -136,11 +135,12 @@ function main(config) {
     // 4. 策略组 (Proxy Groups)
     // ==============================================================================
     
-    // 容错：如果 config.proxies 不存在，初始化为空数组
     if (!config.proxies) config.proxies = [];
 
-    // 定义排除关键词 (正则) - 普通字符串拼接
+    // 定义排除关键词
     var excludeFilter = "(?i)官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍";
+    // 定义热门地区关键词 (用于手动切换白名单)
+    var hotRegionsFilter = "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)";
 
     var groups = [
       // 🟢 第一梯队：控制中心
@@ -149,9 +149,8 @@ function main(config) {
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
         type: "select",
         proxies: [
-          "自动选择", "低倍率节点", "高倍率节点", "香港节点", "台湾节点",
-          "狮城节点", "日本节点", "美国节点", "韩国节点", "其他地区",
-          "手动切换", "DIRECT"
+          "自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点", 
+          "手动切换", "低倍率节点", "其他地区", "DIRECT"
         ]
       },
       {
@@ -159,7 +158,7 @@ function main(config) {
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png",
         type: "url-test",
         "include-all": true,
-        filter: "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(" + excludeFilter + "))",
+        filter: hotRegionsFilter + "(?!.*(" + excludeFilter + "))",
         interval: 300,
         tolerance: 50
       },
@@ -193,27 +192,30 @@ function main(config) {
         name: "油管视频",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png",
         type: "select",
+        // [优化] 将 "自动选择" 提权到第一位
         proxies: [
-          "低倍率节点", "自动选择", "节点选择", "香港节点", "台湾节点",
-          "狮城节点", "日本节点", "美国节点", "韩国节点", "其他地区"
+          "自动选择", "节点选择", "香港节点", "台湾节点",
+          "狮城节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
         ]
       },
       {
         name: "奈飞视频",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png",
         type: "select",
+        // [优化] 将 "自动选择" 提权到第一位
         proxies: [
-          "低倍率节点", "自动选择", "节点选择", "狮城节点", "香港节点",
-          "台湾节点", "日本节点", "美国节点", "韩国节点", "其他地区"
+          "自动选择", "节点选择", "狮城节点", "香港节点",
+          "台湾节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
         ]
       },
       {
         name: "国外媒体",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png",
         type: "select",
+        // [优化] 将 "自动选择" 提权到第一位
         proxies: [
-          "低倍率节点", "节点选择", "自动选择", "香港节点", "台湾节点",
-          "狮城节点", "日本节点", "美国节点", "韩国节点", "其他地区"
+          "自动选择", "节点选择", "香港节点", "台湾节点",
+          "狮城节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
         ]
       },
       {
@@ -243,7 +245,7 @@ function main(config) {
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
         type: "select",
         proxies: [
-          "节点选择", "自动选择", "狮城节点", "香港节点", "台湾节点",
+          "自动选择", "节点选择", "狮城节点", "香港节点", "台湾节点",
           "日本节点", "美国节点", "韩国节点", "其他地区"
         ]
       },
@@ -347,7 +349,17 @@ function main(config) {
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
         type: "select",
         "include-all": true,
+        // 排除掉热门地区和垃圾节点，剩下的就是真正的冷门地区
         filter: "^(?!.*((?i)香港|Hong Kong|HK|🇭🇰|日本|Japan|JP|🇯🇵|美国|USA|States|US(?!tralia|tria)|🇺🇸|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|🇸🇬|韩国|Korea|KR|🇰🇷|" + excludeFilter + ")).*$"
+      },
+      
+      // [优化] 手动切换：仅显示热门地区，确保默认节点是热门的
+      {
+        name: "手动切换",
+        icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png",
+        type: "select",
+        "include-all": true,
+        filter: hotRegionsFilter + "(?!.*(" + excludeFilter + "))"
       },
 
       // 🟣 第五梯队：系统兜底
@@ -383,12 +395,6 @@ function main(config) {
           "节点选择", "自动选择", "DIRECT", "香港节点", "台湾节点",
           "日本节点", "美国节点"
         ]
-      },
-      {
-        name: "手动切换",
-        icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png",
-        type: "select",
-        "include-all": true
       }
     ];
 
@@ -398,7 +404,6 @@ function main(config) {
     // 5. 分流规则 (Rules)
     // ==============================================================================
     var rules = [
-      // ⚡️ [修复] 修正端口匹配语法，移除 /UDP
       "DST-PORT,123,全球直连",
       
       // 0. 用户自定义分区
@@ -477,13 +482,9 @@ function main(config) {
 
     config["rules"] = rules;
 
-    // [关键修复] 强制 JSON 序列化后再解析，确保所有 Key 都是字符串
-    // 修复 'Map<dynamic, dynamic>' is not a subtype of 'Map<String, dynamic>' 错误
     return JSON.parse(JSON.stringify(config));
 
   } catch (e) {
-    // 如果发生错误，将错误打印到日志，并原样返回 config (或返回 null 让 App 处理)
-    // 注意：Clash 客户端的 JS 引擎可能没有 console.error，但通常有 console.log
     console.log("Overwrite Script Error: " + e);
     return config;
   }
