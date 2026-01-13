@@ -2,9 +2,9 @@
  * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
  * Leo Bennett 专属优化版
  * * 🛠️ 修复日志：
- * 1. [关键] 增加 JSON 序列化清洗，彻底修复 "type '_Map<dynamic, dynamic>' is not a subtype" 错误
- * 2. [关键] 增加 try-catch 全局捕获，防止脚本报错导致 App 启动超时
- * 3. 保持 ES5 语法兼容性
+ * 1. [关键] 修复 rules[0] DST-PORT 语法错误 (移除 /UDP 后缀)
+ * 2. [关键] 增加 JSON 序列化清洗，防止 Map 类型错误
+ * 3. [关键] 增加 try-catch 全局捕获
  */
 
 function main(config) {
@@ -398,8 +398,8 @@ function main(config) {
     // 5. 分流规则 (Rules)
     // ==============================================================================
     var rules = [
-      // ⚡️ 放行 NTP
-      "DST-PORT,123/UDP,全球直连",
+      // ⚡️ [修复] 修正端口匹配语法，移除 /UDP
+      "DST-PORT,123,全球直连",
       
       // 0. 用户自定义分区
       "DOMAIN-KEYWORD,pilipili,DIRECT",
