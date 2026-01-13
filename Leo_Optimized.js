@@ -228,8 +228,8 @@ function main(config) {
       filter: "(?i)美国|USA|States|US|🇺🇸|日本|JP|Japan|🇯🇵|台湾|TW|Taiwan|🇹🇼|新加坡|SG|Singapore|🇸🇬|韩国|KR|Korea|🇰🇷|英国|UK|🇬🇧"
     },
     {
-      name: "OpenAi",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bot.png",
+      name: "OpenAI", // [修改] 名字改为更正式的 OpenAI
+      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png", // [修改] 图标更换
       type: "select",
       proxies: [
         "Google/Gemini", "美国节点", "日本节点", "狮城节点",
@@ -475,7 +475,7 @@ function main(config) {
     "IP-CIDR,192.168.0.0/16,全球直连,no-resolve",
     "IP-CIDR,10.0.0.0/8,全球直连,no-resolve",
     "IP-CIDR,172.16.0.0/12,全球直连,no-resolve",
-    "IP-CIDR,127.0.0.0/8,全球直连,no-resolve",
+    "IP-CIDR,127.0.0.0/8,全球直连,no-resolve"，
     "DOMAIN,ntp.aliyun.com,全球直连",
     "DOMAIN,time.apple.com,全球直连",
     "DOMAIN,time.windows.com,全球直连",
@@ -502,7 +502,8 @@ function main(config) {
     "RULE-SET,TikTok,国外媒体",
     "RULE-SET,Spotify,国外媒体",
     "RULE-SET,Discord,国外媒体",
-    "RULE-SET,OpenAi,OpenAi",
+    // [修改] 规则引用名称改为 OpenAI
+    "RULE-SET,OpenAi,OpenAI",
     "RULE-SET,Microsoft,微软服务",
     "RULE-SET,Apple,苹果服务",
 
