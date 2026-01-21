@@ -419,6 +419,7 @@ function main(config) {
       "DOMAIN-KEYWORD,pilipili,DIRECT",
       "DOMAIN-KEYWORD,embyplus,Emby",
       "DOMAIN-SUFFIX,cdn.bgp.yt,DIRECT",
+      "DOMAIN-SUFFIX,media.nijigem.by,DIRECT",
       "DOMAIN-SUFFIX,steamtools.net,DIRECT",
       "DOMAIN-KEYWORD,steamtools,DIRECT",
       "DOMAIN-SUFFIX,challenges.clouflare.com,节点选择",
