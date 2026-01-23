@@ -21,12 +21,12 @@ function main(config) {
     config["bind-address"] = "*";
     config["unified-delay"] = true;
     config["keep-alive-interval"] = 15;
-    
+
     // 开启 TCP 并发 (低延迟)
     config["tcp-concurrent"] = true;
     // 模拟 Chrome 指纹 (防断流)
     config["global-client-fingerprint"] = "chrome";
-    
+
     config["external-controller"] = "0.0.0.0:9090";
     config["external-ui"] = "ui";
     config["external-ui-url"] = "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip";
@@ -128,7 +128,7 @@ function main(config) {
     var myRuleProviders = {};
     for (var key in providersDef) {
       if (Object.prototype.hasOwnProperty.call(providersDef, key)) {
-         myRuleProviders[key] = Object.assign({}, ruleProviderBase, providersDef[key]);
+        myRuleProviders[key] = Object.assign({}, ruleProviderBase, providersDef[key]);
       }
     }
     config["rule-providers"] = myRuleProviders;
@@ -136,7 +136,7 @@ function main(config) {
     // ==============================================================================
     // 4. 策略组 (Proxy Groups)
     // ==============================================================================
-    
+
     if (!config.proxies) config.proxies = [];
 
     // 定义排除关键词
@@ -152,7 +152,7 @@ function main(config) {
         type: "select",
         // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
-          "自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点", 
+          "自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点",
           "手动切换", "低倍率节点", "其他地区", "DIRECT"
         ]
       },
@@ -190,7 +190,7 @@ function main(config) {
         type: "select",
         "include-all": true,
         proxies: ["DIRECT"],
-        filter: "(?i)(香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|狮城|🇸🇬|美国|USA|States|US|🇺🇸|韩国|Korea|KR|🇰🇷)"
+        filter: "(?i)((香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|狮城|🇸🇬|美国|USA|States|US|🇺🇸|韩国|Korea|KR|🇰🇷)|(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍)(?!.*(日本|Japan|JP|🇯🇵))"
       },
       {
         name: "油管视频",
@@ -361,7 +361,7 @@ function main(config) {
         "include-all": true,
         filter: "^(?!.*((?i)香港|Hong Kong|HK|🇭🇰|日本|Japan|JP|🇯🇵|美国|USA|States|US(?!tralia|tria)|🇺🇸|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|🇸🇬|韩国|Korea|KR|🇰🇷|" + excludeFilter + ")).*$"
       },
-      
+
       // 手动切换
       {
         name: "手动切换",
@@ -414,7 +414,7 @@ function main(config) {
     // ==============================================================================
     var rules = [
       "DST-PORT,123,全球直连",
-      
+
       // 0. 用户自定义分区
       "DOMAIN-KEYWORD,pilipili,DIRECT",
       "DOMAIN-KEYWORD,embyplus,Emby",
