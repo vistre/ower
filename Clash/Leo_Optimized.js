@@ -1,7 +1,7 @@
 /**
  * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
  * Leo Bennett 专属优化版
- * V3.4
+ * V3.5
  * * 🛠️ 优化日志：
  * 1. [优化] "电报消息" 策略组锁定亚洲区域 (DC5) 节点，并开启自动测速
  * 2. [新增] Emby 分组增加所有低倍率节点 (0.1x)，同时保留常见地区并排除日本
@@ -10,6 +10,8 @@
  * 5. [体验] 流媒体策略组 (YouTube/Netflix) 默认优先使用 "自动选择"
  * 6. [维护] 保持 DNS/NTP/Fastly 加速/Chrome 指纹等核心优化
  * 7. [修复] "电报消息" 策略组移除澳洲/新西兰节点，精确匹配亚洲区域
+ * 8. [体验] 游戏/微软/苹果服务默认使用 "节点选择"，避免直连失败
+ * 9. [优化] 动态隐藏 "高倍率节点" 分组 (若无匹配节点)
  */
 
 function main(config) {
@@ -144,6 +146,7 @@ function main(config) {
 
     // 定义排除关键词
     var excludeFilter = "(?i)官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍";
+    var highMultiplierFilter = "(?i)(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|高倍";
     // 定义热门地区关键词 (用于手动切换白名单)
     var hotRegionsFilter = "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)";
 
@@ -153,7 +156,6 @@ function main(config) {
         name: "节点选择",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
         type: "select",
-        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点",
           "手动切换", "低倍率节点", "其他地区", "DIRECT"
@@ -179,7 +181,6 @@ function main(config) {
         name: "OpenAI",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png",
         type: "select",
-        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "Google/Gemini", "美国节点", "日本节点", "新加坡节点",
           "台湾节点", "韩国节点", "其他地区"
@@ -199,7 +200,6 @@ function main(config) {
         name: "油管视频",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png",
         type: "select",
-        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "自动选择", "节点选择", "香港节点", "台湾节点",
           "新加坡节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
@@ -209,7 +209,6 @@ function main(config) {
         name: "奈飞视频",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png",
         type: "select",
-        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "自动选择", "节点选择", "新加坡节点", "香港节点",
           "台湾节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
@@ -219,7 +218,6 @@ function main(config) {
         name: "国外媒体",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png",
         type: "select",
-        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "自动选择", "节点选择", "香港节点", "台湾节点",
           "新加坡节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
@@ -260,19 +258,18 @@ function main(config) {
         name: "微软服务",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png",
         type: "select",
-        proxies: ["DIRECT", "节点选择", "美国节点", "香港节点", "台湾节点"]
+        proxies: ["节点选择", "DIRECT", "美国节点", "香港节点", "台湾节点"]
       },
       {
         name: "苹果服务",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png",
         type: "select",
-        proxies: ["DIRECT", "节点选择", "美国节点", "香港节点", "台湾节点"]
+        proxies: ["节点选择", "DIRECT", "美国节点", "香港节点", "台湾节点"]
       },
       {
         name: "谷歌FCM",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png",
         type: "select",
-        // [规范化] 狮城节点 -> 新加坡节点
         proxies: [
           "DIRECT", "节点选择", "美国节点", "香港节点", "台湾节点", "日本节点", "新加坡节点"
         ]
@@ -281,7 +278,7 @@ function main(config) {
         name: "游戏平台",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png",
         type: "select",
-        proxies: ["DIRECT", "节点选择", "香港节点", "日本节点", "美国节点"]
+        proxies: ["节点选择", "DIRECT", "香港节点", "日本节点", "美国节点"]
       },
 
       // ⚪ 第四梯队：地区与功能仓库
@@ -297,7 +294,7 @@ function main(config) {
         icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/fastcloud.png",
         type: "select",
         "include-all": true,
-        filter: "(?i)(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|高倍"
+        filter: highMultiplierFilter
       },
       // 地区自动测速
       {
@@ -336,7 +333,6 @@ function main(config) {
         interval: 300,
         tolerance: 50
       },
-      // [规范化] 组名：狮城节点 -> 新加坡节点
       {
         name: "新加坡节点",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png",
@@ -408,6 +404,25 @@ function main(config) {
         ]
       }
     ];
+
+    // 动态检查是否存在高倍率节点
+    var hasHighMultiplierNodes = false;
+    if (config.proxies && config.proxies.length > 0) {
+      var regex = new RegExp(highMultiplierFilter, "i");
+      for (var i = 0; i < config.proxies.length; i++) {
+        if (regex.test(config.proxies[i].name)) {
+          hasHighMultiplierNodes = true;
+          break;
+        }
+      }
+    }
+
+    // 如果不存在高倍率节点，移除该策略组
+    if (!hasHighMultiplierNodes) {
+      groups = groups.filter(function (g) {
+        return g.name !== "高倍率节点";
+      });
+    }
 
     config["proxy-groups"] = groups;
 
