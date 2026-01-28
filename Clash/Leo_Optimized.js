@@ -1,7 +1,7 @@
 /**
  * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
  * Leo Bennett 专属优化版
- * V3.3
+ * V3.4
  * * 🛠️ 优化日志：
  * 1. [优化] "电报消息" 策略组锁定亚洲区域 (DC5) 节点，并开启自动测速
  * 2. [新增] Emby 分组增加所有低倍率节点 (0.1x)，同时保留常见地区并排除日本
@@ -9,6 +9,7 @@
  * 4. [体验] "手动切换" 增加热门地区白名单，不再显示冷门节点
  * 5. [体验] 流媒体策略组 (YouTube/Netflix) 默认优先使用 "自动选择"
  * 6. [维护] 保持 DNS/NTP/Fastly 加速/Chrome 指纹等核心优化
+ * 7. [修复] "电报消息" 策略组移除澳洲/新西兰节点，精确匹配亚洲区域
  */
 
 function main(config) {
@@ -251,7 +252,7 @@ function main(config) {
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
         type: "url-test",
         "include-all": true,
-        filter: "(?i)(新加坡|狮城|Singapore|SG|🇸🇬|香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|日本|Japan|JP|🇯🇵|韩国|Korea|KR|🇰🇷|印度|India|🇮🇳|泰国|Thailand|🇹🇭|越南|Vietnam|🇻🇳|马来西亚|Malaysia|🇲🇾|菲律宾|Philippines|🇵🇭|澳大利亚|Australia|AU|🇦🇺|新西兰|New Zealand|NZ|🇳🇿|印尼|Indonesia|ID|🇮🇩|巴基斯坦|Pakistan|孟加拉|Bangladesh)(?!.*(" + excludeFilter + "))",
+        filter: "(?i)(新加坡|狮城|Singapore|SG|🇸🇬|香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|日本|Japan|JP|🇯🇵|韩国|Korea|KR|🇰🇷|印度|India|🇮🇳|泰国|Thailand|🇹🇭|越南|Vietnam|🇻🇳|马来西亚|Malaysia|🇲🇾|菲律宾|Philippines|🇵🇭|印尼|Indonesia|ID|🇮🇩|巴基斯坦|Pakistan|孟加拉|Bangladesh)(?!.*(" + excludeFilter + "))",
         interval: 300,
         tolerance: 50
       },
