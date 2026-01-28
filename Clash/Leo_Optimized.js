@@ -1,7 +1,7 @@
 /**
  * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
  * Leo Bennett 专属优化版
- * V3.5
+ * V3.6
  * * 🛠️ 优化日志：
  * 1. [优化] "电报消息" 策略组锁定亚洲区域 (DC5) 节点，并开启自动测速
  * 2. [新增] Emby 分组增加所有低倍率节点 (0.1x)，同时保留常见地区并排除日本
@@ -11,7 +11,6 @@
  * 6. [维护] 保持 DNS/NTP/Fastly 加速/Chrome 指纹等核心优化
  * 7. [修复] "电报消息" 策略组移除澳洲/新西兰节点，精确匹配亚洲区域
  * 8. [体验] 游戏/微软/苹果服务默认使用 "节点选择"，避免直连失败
- * 9. [优化] 动态隐藏 "高倍率节点" 分组 (若无匹配节点)
  */
 
 function main(config) {
@@ -144,9 +143,7 @@ function main(config) {
 
     if (!config.proxies) config.proxies = [];
 
-    // 定义排除关键词
     var excludeFilter = "(?i)官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍";
-    var highMultiplierFilter = "(?i)(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|高倍";
     // 定义热门地区关键词 (用于手动切换白名单)
     var hotRegionsFilter = "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)";
 
@@ -294,7 +291,7 @@ function main(config) {
         icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/fastcloud.png",
         type: "select",
         "include-all": true,
-        filter: highMultiplierFilter
+        filter: "(?i)(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|高倍"
       },
       // 地区自动测速
       {
@@ -404,25 +401,6 @@ function main(config) {
         ]
       }
     ];
-
-    // 动态检查是否存在高倍率节点
-    var hasHighMultiplierNodes = false;
-    if (config.proxies && config.proxies.length > 0) {
-      var regex = new RegExp(highMultiplierFilter, "i");
-      for (var i = 0; i < config.proxies.length; i++) {
-        if (regex.test(config.proxies[i].name)) {
-          hasHighMultiplierNodes = true;
-          break;
-        }
-      }
-    }
-
-    // 如果不存在高倍率节点，移除该策略组
-    if (!hasHighMultiplierNodes) {
-      groups = groups.filter(function (g) {
-        return g.name !== "高倍率节点";
-      });
-    }
 
     config["proxy-groups"] = groups;
 
