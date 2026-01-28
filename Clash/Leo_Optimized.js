@@ -1,13 +1,14 @@
 /**
  * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
  * Leo Bennett 专属优化版
- * V3.2
+ * V3.3
  * * 🛠️ 优化日志：
- * 1. [新增] Emby 分组增加所有低倍率节点 (0.1x)，同时保留常见地区并排除日本
- * 2. [规范] 全局命名标准化：废除 "狮城节点"，统一使用 "新加坡节点"
- * 2. [体验] "手动切换" 增加热门地区白名单，不再显示冷门节点
- * 3. [体验] 流媒体策略组 (YouTube/Netflix) 默认优先使用 "自动选择"
- * 4. [维护] 保持 DNS/NTP/Fastly 加速/Chrome 指纹等核心优化
+ * 1. [优化] "电报消息" 策略组锁定亚洲区域 (DC5) 节点，并开启自动测速
+ * 2. [新增] Emby 分组增加所有低倍率节点 (0.1x)，同时保留常见地区并排除日本
+ * 3. [规范] 全局命名标准化：废除 "狮城节点"，统一使用 "新加坡节点"
+ * 4. [体验] "手动切换" 增加热门地区白名单，不再显示冷门节点
+ * 5. [体验] 流媒体策略组 (YouTube/Netflix) 默认优先使用 "自动选择"
+ * 6. [维护] 保持 DNS/NTP/Fastly 加速/Chrome 指纹等核心优化
  */
 
 function main(config) {
@@ -248,12 +249,11 @@ function main(config) {
       {
         name: "电报消息",
         icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
-        type: "select",
-        // [规范化] 狮城节点 -> 新加坡节点
-        proxies: [
-          "自动选择", "节点选择", "新加坡节点", "香港节点", "台湾节点",
-          "日本节点", "美国节点", "韩国节点", "其他地区"
-        ]
+        type: "url-test",
+        "include-all": true,
+        filter: "(?i)(新加坡|狮城|Singapore|SG|🇸🇬|香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|日本|Japan|JP|🇯🇵|韩国|Korea|KR|🇰🇷|印度|India|🇮🇳|泰国|Thailand|🇹🇭|越南|Vietnam|🇻🇳|马来西亚|Malaysia|🇲🇾|菲律宾|Philippines|🇵🇭|澳大利亚|Australia|AU|🇦🇺|新西兰|New Zealand|NZ|🇳🇿|印尼|Indonesia|ID|🇮🇩|巴基斯坦|Pakistan|孟加拉|Bangladesh)(?!.*(" + excludeFilter + "))",
+        interval: 300,
+        tolerance: 50
       },
       {
         name: "微软服务",
