@@ -82,18 +82,13 @@ function main(config) {
       }
     };
 
-    var httpPorts = [80];
-    for (var i = 8080; i <= 8880; i++) {
-      httpPorts.push(i);
-    }
-
     config["sniffer"] = {
       enable: true,
       "parse-pure-ip": true,
       "force-dns-mapping": true,
       "override-destination": true,
       sniff: {
-        HTTP: { ports: httpPorts, "override-destination": true },
+        HTTP: { ports: [80, "8080-8880"], "override-destination": true },
         TLS: { ports: [443, 8443] }
       },
       "skip-domain": ["+.push.apple.com"]
