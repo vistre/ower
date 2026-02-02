@@ -90,8 +90,8 @@ function main(config) {
       "force-dns-mapping": true,
       "override-destination": true,
       sniff: {
-        HTTP: { ports: [80, 8080 - 8880], "override-destination": true },
-        TLS: { ports: [443] }
+        HTTP: { ports: [80, "8080-8880"], "override-destination": true },
+        TLS: { ports: [443, 8443] }
       },
       "skip-domain": ["+.push.apple.com"]
     };
