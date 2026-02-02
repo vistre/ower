@@ -1,6 +1,6 @@
 # —————————
 # Mihomo Optimized Configuration
-# Version: V4.3
+# Version: V4.4
 # Update: 2026-02-02
 # —————————
 # 基础设置
@@ -59,19 +59,19 @@ p: &p
 
 # 订阅地址
 proxy-providers:
-  1.主要地址:
+  proxy1:
     <<: *p
     override:
       additional-prefix: "Main："
     path: ./proxy_provider/proxy1.yaml
     url: "此处引入您的Clash订阅链接地址"
-#  2.备用地址:
+#  proxy2:
 #    <<: *p
 #    override:
 #      additional-prefix: "Minor："
 #    path: ./proxy_provider/proxy2.yaml
 #    url: "此处引入您的Clash订阅链接地址"
-#  3.额外地址:
+#  proxy3:
 #    <<: *p
 #    override:
 #      additional-prefix: "Additi："
@@ -154,9 +154,9 @@ dns:
 # 策略组
 use_all_provider: &use_all_provider
   use:
-    - 1.主要地址
-    # - 2.备用地址
-    # - 3.额外地址
+    - proxy1
+    # - proxy2
+    # - proxy3
 
 proxy-groups:
   # 🟢 第一梯队：控制中心
