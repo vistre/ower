@@ -1,7 +1,5 @@
 /**
  * 更新日期：2026-01-13
- * 优化整理：Leo Bennett 的 AI 助手
- * 针对优化：丛雨云及类似二次元命名机场，增强了对“超时/系统时间”等无效节点的过滤。
  * * 用法：
  * https://.../rename.js#flag&twnocn (如果你想保留🇹🇼旗帜，请加上 &twnocn)
  *
@@ -48,7 +46,7 @@ const nameMap = {
   gq: "gq", flag: "gq",
 };
 
-const inname = nameMap[inArg.in] || "";
+const inname = nameMap[inArg.在] || "";
 const outputName = nameMap[inArg.out] || "";
 
 // prettier-ignore
