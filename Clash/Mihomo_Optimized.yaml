@@ -1,16 +1,20 @@
 # —————————
 # 基础设置
 mixed-port: 7890
-redir-port: 7891
-tproxy-port: 1536
-ipv6: true
+redir-port: 9797
+tproxy-port: 9898
 mode: Rule
+bind-address: '*'
+ipv6: true
 allow-lan: true
-disable-keep-alive: true
-geodata-mode: false
-geo-auto-update: true
-geo-update-interval: 24
-updatetime: &Time 86400
+unified-delay: false
+tcp-concurrent: true
+log-level: error
+find-process-mode: always
+global-client-fingerprint: random
+external-controller: 0.0.0.0:9090
+external-ui: ./dashboard
+secret: ""
 
 geox-url:
   asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
@@ -23,16 +27,13 @@ experimental:
       - name: "Accept-Language"
         value: "en-US,en;q=0.9"
 
-unified-delay: true
-tcp-concurrent: true
-log-level: silent
-find-process-mode: always
-global-client-fingerprint: chrome
-
-external-controller: 0.0.0.0:9090
-external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
-external-ui: "./webroot/Zash/"
-secret: ""
+# —————————
+# 其他优化配置
+disable-keep-alive: true
+geodata-mode: false
+geo-auto-update: true
+geo-update-interval: 24
+updatetime: &Time 86400
 
 # —————————
 # 锚点
@@ -110,7 +111,7 @@ tun:
   auto-detect-interface: true
 
 # —————————
-# DNS 模块 (严格复刻 phone ver.js，适配 RuleSet)
+# DNS 模块
 dns:
   enable: true
   listen: ":1053"
@@ -122,7 +123,6 @@ dns:
     - "RULE-SET:CN"
     - "RULE-SET:Private"
     - "RULE-SET:GoogleFCM"
-    # phone ver.js 补充
     - "+.lan"
     - "+.local"
     - "+.msftconnecttest.com"
@@ -144,11 +144,9 @@ dns:
     - tls://dns.google
     - tls://1.1.1.1
   nameserver-policy:
-    # 对应 geosite:cn,private,apple-cn,google-cn,category-games@cn
     "RULE-SET:CN,Private,Apple,GoogleCN,GamesCN":
       - tls://dns.alidns.com
       - tls://dot.pub
-    # 对应 geosite:!cn,!private
     "RULE-SET:Geolocation_NotCN":
       - tls://dns.google
       - tls://1.1.1.1
@@ -165,6 +163,7 @@ proxy-groups:
   # 🟢 第一梯队：控制中心
   - name: 节点选择
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
     proxies:
       - 自动选择
       - 香港节点
@@ -180,6 +179,7 @@ proxy-groups:
 
   - name: 自动选择
     type: url-test
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
@@ -187,11 +187,13 @@ proxy-groups:
 
   - name: 手动切换
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png"
     filter: "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
     <<: *use_all_provider
 
   - name: AI服务
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
     proxies:
       - 美国节点
       - 日本节点
@@ -204,6 +206,7 @@ proxy-groups:
 
   - name: OpenAI
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
     proxies:
       - Google/Gemini
       - 美国节点
@@ -215,6 +218,7 @@ proxy-groups:
 
   - name: Google/Gemini
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
     proxies:
       - 美国节点
       - 日本节点
@@ -226,6 +230,7 @@ proxy-groups:
   # 🟡 第二梯队：流媒体 & 娱乐
   - name: Emby
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
     filter: "(?i)((香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|狮城|🇸🇬|美国|USA|States|US|🇺🇸|韩国|Korea|KR|🇰🇷)|(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍)(?!.*(日本|Japan|JP|🇯🇵))"
     proxies:
       - DIRECT
@@ -233,6 +238,7 @@ proxy-groups:
 
   - name: 油管视频
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png"
     proxies:
       - 自动选择
       - 节点选择
@@ -247,6 +253,7 @@ proxy-groups:
 
   - name: 奈飞视频
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png"
     proxies:
       - 自动选择
       - 节点选择
@@ -261,6 +268,7 @@ proxy-groups:
 
   - name: 国外媒体
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png"
     proxies:
       - 自动选择
       - 节点选择
@@ -275,6 +283,7 @@ proxy-groups:
 
   - name: 巴哈姆特
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bahamut.png"
     proxies:
       - 台湾节点
       - 节点选择
@@ -282,6 +291,7 @@ proxy-groups:
 
   - name: 哔哩哔哩
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/bilibili.png"
     proxies:
       - DIRECT
       - 台湾节点
@@ -289,6 +299,7 @@ proxy-groups:
 
   - name: 网易音乐
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netease_Music.png"
     proxies:
       - DIRECT
       - 节点选择
@@ -296,6 +307,7 @@ proxy-groups:
   # 🔵 第三梯队：常用服务
   - name: 电报消息
     type: url-test
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(新加坡|狮城|Singapore|SG|🇸🇬|香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|日本|Japan|JP|🇯🇵|韩国|Korea|KR|🇰🇷|印度|India|🇮🇳|泰国|Thailand|🇹🇭|越南|Vietnam|🇻🇳|马来西亚|Malaysia|🇲🇾|菲律宾|Philippines|🇵🇭|印尼|Indonesia|ID|🇮🇩|巴基斯坦|Pakistan|孟加拉|Bangladesh)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
@@ -303,6 +315,7 @@ proxy-groups:
 
   - name: 微软服务
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png"
     proxies:
       - 节点选择
       - DIRECT
@@ -312,6 +325,7 @@ proxy-groups:
 
   - name: 苹果服务
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png"
     proxies:
       - 节点选择
       - DIRECT
@@ -321,6 +335,7 @@ proxy-groups:
 
   - name: 谷歌FCM
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
     proxies:
       - DIRECT
       - 节点选择
@@ -332,6 +347,7 @@ proxy-groups:
 
   - name: 游戏平台
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png"
     proxies:
       - 节点选择
       - DIRECT
@@ -342,16 +358,19 @@ proxy-groups:
   # ⚪ 第四梯队：地区自动测速 & 功能分类
   - name: 低倍率节点
     type: select
+    icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png"
     filter: "(0\\.\\d+|0)(\\s)*(x|×|倍)|(?i)free|low|公益|低倍"
     <<: *use_all_provider
   
   - name: 高倍率节点
     type: select
+    icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/fastcloud.png"
     filter: "(?i)(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|高倍"
     <<: *use_all_provider
 
   - name: 香港节点
     type: url-test
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(香港|Hong Kong|HK|🇭🇰)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
@@ -359,6 +378,7 @@ proxy-groups:
 
   - name: 日本节点
     type: url-test
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(日本|Japan|JP|🇯🇵)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
@@ -366,6 +386,7 @@ proxy-groups:
 
   - name: 美国节点
     type: url-test
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(美国|USA|States|US|🇺🇸)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍|Australia|澳洲|Austria|Russia|Plus|Music))"
@@ -373,6 +394,7 @@ proxy-groups:
 
   - name: 台湾节点
     type: url-test
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(台湾|Taiwan|TW|🇹🇼)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
@@ -380,6 +402,7 @@ proxy-groups:
 
   - name: 新加坡节点
     type: url-test
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(新加坡|狮城|Singapore|SG|🇸🇬)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
@@ -387,6 +410,7 @@ proxy-groups:
 
   - name: 韩国节点
     type: url-test
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(韩国|Korea|KR|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
@@ -394,12 +418,14 @@ proxy-groups:
 
   - name: 其他地区
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
     filter: "^(?!.*((?i)香港|Hong Kong|HK|🇭🇰|日本|Japan|JP|🇯🇵|美国|USA|States|US(?!tralia|tria)|🇺🇸|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|🇸🇬|韩国|Korea|KR|🇰🇷|官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍)).*$"
     <<: *use_all_provider
 
   # 🟣 系统兜底
   - name: 国内媒体
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/DomesticMedia.png"
     proxies:
       - DIRECT
       - 香港节点
@@ -407,24 +433,28 @@ proxy-groups:
 
   - name: 全球直连
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png"
     proxies:
       - DIRECT
       - 节点选择
 
   - name: 广告拦截
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png"
     proxies:
       - REJECT
       - DIRECT
   
   - name: 应用净化
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hijacking.png"
     proxies:
       - REJECT
       - DIRECT
 
   - name: 漏网之鱼
     type: select
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png"
     proxies:
       - 节点选择
       - 自动选择
@@ -436,13 +466,13 @@ proxy-groups:
 
   - name: 订阅更新
     type: select
+    icon: "https://cdn.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
     proxies:
       - DIRECT
       - 节点选择
 
 # —————————
-# 规则提供者 (Rule Providers) 
-# 已统一命名为简洁英文格式，去除 _域/_IP 后缀，与 rules 完美对应
+# 规则提供者 (Rule Providers)
 rule-anchor:
   Local: &Local
     {type: file, behavior: classical, format: text}
@@ -479,7 +509,7 @@ rule-providers:
     path: ./rules/Geolocation_NotCN.mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"
 
-  # ———— 常用 MRS 规则 (简洁命名) ————
+  # ———— 常用 MRS 规则 ————
   CN:
     <<: *Domain
     path: ./rules/CN_域.mrs
@@ -498,7 +528,6 @@ rule-providers:
     <<: *Domain
     path: ./rules/GamesCN.mrs
     url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-games@cn.mrs"
-
   
   NoAds:
     <<: *Domain
