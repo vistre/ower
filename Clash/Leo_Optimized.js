@@ -55,6 +55,7 @@ function main(config) {
       "fake-ip-range": "198.18.0.1/16",
       "respect-rules": true,
       "fake-ip-filter": [
+        "RULE-SET:Fake-IP-Filter",
         "+.lan", "+.local", "+.msftconnecttest.com", "+.msftncsi.com",
         "localhost.ptlogin2.qq.com", "localhost.sec.qq.com",
         "+.srv.nintendo.net", "+.stun.playstation.net",
@@ -73,9 +74,9 @@ function main(config) {
       enable: true,
       "parse-pure-ip": true,
       "force-dns-mapping": true,
-      "override-destination": false,
+      "override-destination": true,
       sniff: {
-        HTTP: { ports: [80, 443], "override-destination": false },
+        HTTP: { ports: [80, 8080 - 8880], "override-destination": true },
         TLS: { ports: [443] }
       },
       "skip-domain": ["+.push.apple.com"]
@@ -93,12 +94,12 @@ function main(config) {
 
     var providersDef = {
       Gemini: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Gemini/Gemini.list", path: "./ruleset/Gemini.list" },
-      Google: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.list", path: "./ruleset/Google.list" },
-      OpenAi: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.list", path: "./ruleset/OpenAI.list" },
-      TikTok: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/TikTok/TikTok.list", path: "./ruleset/TikTok.list" },
-      Spotify: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Spotify/Spotify.list", path: "./ruleset/Spotify.list" },
-      Discord: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Discord/Discord.list", path: "./ruleset/Discord.list" },
-      Microsoft: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Microsoft/Microsoft.list", path: "./ruleset/Microsoft.list" },
+      Google: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs", path: "./rules/Google.mrs", format: "mrs", type: "http", behavior: "domain" },
+      OpenAi: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/openai.mrs", path: "./rules/OpenAI.mrs", format: "mrs", type: "http", behavior: "domain" },
+      TikTok: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.mrs", path: "./rules/TikTok.mrs", format: "mrs", type: "http", behavior: "domain" },
+      Spotify: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/spotify.mrs", path: "./rules/Spotify.mrs", format: "mrs", type: "http", behavior: "domain" },
+      Discord: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/discord.mrs", path: "./rules/Discord.mrs", format: "mrs", type: "http", behavior: "domain" },
+      Microsoft: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs", path: "./rules/Microsoft.mrs", format: "mrs", type: "http", behavior: "domain" },
       Speedtest: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Speedtest/Speedtest.list", path: "./ruleset/Speedtest.list" },
       WeChat: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/WeChat/WeChat.list", path: "./ruleset/WeChat.list" },
       Direct: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Direct/Direct.list", path: "./ruleset/Direct.list" },
@@ -109,24 +110,29 @@ function main(config) {
       UnBan: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/UnBan.list", path: "./ruleset/UnBan.list" },
       BanAD: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanAD.list", path: "./ruleset/BanAD.list" },
       BanProgramAD: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanProgramAD.list", path: "./ruleset/BanProgramAD.list" },
-      GoogleFCM: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/GoogleFCM.list", path: "./ruleset/GoogleFCM.list" },
+      GoogleFCM: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs", path: "./rules/GoogleFCM.mrs", format: "mrs", type: "http", behavior: "domain" },
       GoogleCN: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/GoogleCN.list", path: "./ruleset/GoogleCN.list" },
       SteamCN: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/SteamCN.list", path: "./ruleset/SteamCN.list" },
-      Apple: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Apple.list", path: "./ruleset/Apple.list" },
-      Telegram: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Telegram.list", path: "./ruleset/Telegram.list" },
+      Apple: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs", path: "./rules/Apple.mrs", format: "mrs", type: "http", behavior: "domain" },
+      Telegram: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs", path: "./rules/Telegram.mrs", format: "mrs", type: "http", behavior: "domain" },
       NetEaseMusic: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/NetEaseMusic.list", path: "./ruleset/NetEaseMusic.list" },
       Epic: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Epic.list", path: "./ruleset/Epic.list" },
       Origin: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Origin.list", path: "./ruleset/Origin.list" },
       Sony: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Sony.list", path: "./ruleset/Sony.list" },
-      Steam: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Steam.list", path: "./ruleset/Steam.list" },
+      Steam: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs", path: "./rules/Steam.mrs", format: "mrs", type: "http", behavior: "domain" },
       Nintendo: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Nintendo.list", path: "./ruleset/Nintendo.list" },
-      YouTube: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/YouTube.list", path: "./ruleset/YouTube.list" },
-      Netflix: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Netflix.list", path: "./ruleset/Netflix.list" },
+      YouTube: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs", path: "./rules/YouTube.mrs", format: "mrs", type: "http", behavior: "domain" },
+      Netflix: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs", path: "./rules/Netflix.mrs", format: "mrs", type: "http", behavior: "domain" },
       Bahamut: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Bahamut.list", path: "./ruleset/Bahamut.list" },
       BilibiliHMT: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/BilibiliHMT.list", path: "./ruleset/BilibiliHMT.list" },
-      Bilibili: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Bilibili.list", path: "./ruleset/Bilibili.list" },
+      Bilibili: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs", path: "./rules/Bilibili.mrs", format: "mrs", type: "http", behavior: "domain" },
       ProxyMedia: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyMedia.list", path: "./ruleset/ProxyMedia.list" },
-      ProxyGFWlist: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyGFWlist.list", path: "./ruleset/ProxyGFWlist.list" }
+      ProxyGFWlist: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyGFWlist.list", path: "./ruleset/ProxyGFWlist.list" },
+      // New Optimized Providers (MRS)
+      "Fake-IP-Filter": { url: "https://ghfast.top/github.com/DustinWin/ruleset_geodata/raw/refs/heads/mihomo-ruleset/fakeip-filter.mrs", path: "./rules/fakeip-filter.mrs", format: "mrs", type: "http", behavior: "domain" },
+      CN: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs", path: "./rules/CN.mrs", format: "mrs", type: "http", behavior: "domain" },
+      CN_IP: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/cn.mrs", path: "./rules/CN_IP.mrs", format: "mrs", type: "http", behavior: "ipcidr" },
+      Private: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", path: "./rules/Private.mrs", format: "mrs", type: "http", behavior: "domain" }
     };
 
     var myRuleProviders = {};
@@ -434,13 +440,10 @@ function main(config) {
       "DOMAIN,time.windows.com,全球直连",
 
       // 2. 直连优化
-      "RULE-SET,LocalAreaNetwork,全球直连",
+      // 2. 直连优化 (逻辑合并: Private + CN + CN_IP)
       "RULE-SET,Download,全球直连",
-      "RULE-SET,GoogleCN,全球直连",
-      "RULE-SET,SteamCN,全球直连",
-      "RULE-SET,WeChat,全球直连",
-      "RULE-SET,UnBan,全球直连",
       "RULE-SET,Direct,全球直连",
+      "OR,((RULE-SET,Private),(RULE-SET,CN),(RULE-SET,CN_IP)),全球直连",
 
       // 3. 广告拦截
       "RULE-SET,BanAD,广告拦截",

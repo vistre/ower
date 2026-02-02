@@ -120,6 +120,7 @@ dns:
   fake-ip-range: 198.18.0.1/16
   respect-rules: true
   fake-ip-filter:
+    - "RULE-SET:Fake-IP-Filter" # 引用外部规则集 (优化)
     - "RULE-SET:CN"
     - "RULE-SET:Private"
     - "RULE-SET:GoogleFCM"
@@ -127,12 +128,6 @@ dns:
     - "+.local"
     - "+.msftconnecttest.com"
     - "+.msftncsi.com"
-    - "localhost.ptlogin2.qq.com"
-    - "localhost.sec.qq.com"
-    - "+.srv.nintendo.net"
-    - "+.stun.playstation.net"
-    - "xbox.*.microsoft.com"
-    - "+.xboxlive.com"
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
@@ -472,7 +467,7 @@ proxy-groups:
       - 节点选择
 
 # —————————
-# 规则提供者 (Rule Providers)
+# 规则提供者 (Rule Providers) 
 rule-anchor:
   Local: &Local
     {type: file, behavior: classical, format: text}
@@ -484,6 +479,14 @@ rule-anchor:
     {type: http, behavior: domain, format: mrs, interval: *Time}
 
 rule-providers:
+  Fake-IP-Filter: # 新增：远程 Fake-IP 过滤规则集
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/fakeip-filter.mrs
+    url: "https://ghfast.top/github.com/DustinWin/ruleset_geodata/raw/refs/heads/mihomo-ruleset/fakeip-filter.mrs"
+  
   自定义规则:
     <<: *Local
     path: ./etc/自定义规则.list
@@ -519,7 +522,6 @@ rule-providers:
     path: ./rules/CN_IP.mrs
     url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/cn.mrs"
   
-  # 用于 DNS 分流的规则
   GoogleCN:
     <<: *Domain
     path: ./rules/GoogleCN.mrs
@@ -639,32 +641,27 @@ rule-providers:
     path: ./rules/Private.mrs
     url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs"
 
-  # ———— 补充 phone ver.js 中存在但 MRS 缺失的规则 ————
+  # ———— 补充规则 (Text 格式) ————
   NetEaseMusic:
     <<: *Classical
     path: ./ruleset/NetEaseMusic.list
     url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/NetEaseMusic.list"
-  
   Bahamut:
     <<: *Classical
     path: ./ruleset/Bahamut.list
     url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Bahamut.list"
-  
   Epic:
     <<: *Classical
     path: ./ruleset/Epic.list
     url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Epic.list"
-  
   Origin:
     <<: *Classical
     path: ./ruleset/Origin.list
     url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Origin.list"
-  
   Sony:
     <<: *Classical
     path: ./ruleset/Sony.list
     url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Sony.list"
-  
   Nintendo:
     <<: *Classical
     path: ./ruleset/Nintendo.list
@@ -691,7 +688,7 @@ rules:
   - DOMAIN-SUFFIX,cm.steampowered.com,DIRECT
   - DOMAIN-SUFFIX,steamserver.net,DIRECT
 
-  # 1. 基础设施
+  # 1. 基础设施与直连 (优化：Fake-IP + OR 逻辑合并)
   - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
   - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
@@ -700,15 +697,13 @@ rules:
   - DOMAIN,time.apple.com,DIRECT
   - DOMAIN,time.windows.com,DIRECT
 
-  # 2. 直连优化
-  - RULE-SET,Private,DIRECT
-  - RULE-SET,CN,DIRECT
-  - RULE-SET,CN_IP,DIRECT
+  # 🔴 CORE OPTIMIZATION: 合并常见直连规则，提高匹配效率
+  - OR,((RULE-SET,Private),(RULE-SET,CN),(RULE-SET,CN_IP)),DIRECT
 
   # 3. 广告拦截
   - RULE-SET,NoAds,广告拦截
 
-  # 4. AI 服务 (优先)
+  # 4. AI 服务
   - RULE-SET,OpenAI,OpenAI
   - RULE-SET,AI,AI服务
 
