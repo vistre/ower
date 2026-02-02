@@ -1,7 +1,7 @@
 # —————————
 # Mihomo Optimized Configuration
 # Version: V4.5
-# Update: 2026-02-02
+# Update: 2026-02-03
 # —————————
 # 基础设置
 mixed-port: 7890
@@ -107,7 +107,7 @@ sniffer:
 tun:
   enable: true
   device: Meta
-  stack: gvisor
+  stack: mixed
   dns-hijack:
     - any:53
     - tcp://any:53
