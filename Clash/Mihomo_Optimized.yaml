@@ -37,8 +37,8 @@ experimental:
 # —————————
 # 其他优化配置
 disable-keep-alive: true
-geodata-mode: true
-geo-auto-update: true
+geodata-mode: false
+geo-auto-update: false
 geo-update-interval: 24
 updatetime: &Time 86400
 
