@@ -1,6 +1,6 @@
 # —————————
 # Mihomo Optimized Configuration
-# Version: V4.7
+# Version: V4.8
 # Update: 2026-02-03
 # —————————
 # 基础设置
@@ -193,35 +193,17 @@ proxy-groups:
     filter: "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
     <<: *use_all_provider
 
-  - name: AI服务
+  - name: Google/Gemini
     type: select
-    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
-    proxies:
-      - 美国节点
-      - 日本节点
-      - 新加坡节点
-      - 台湾节点
-      - 韩国节点
-      - 其他地区
-      - OpenAI
-      - Google/Gemini
+    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
+    filter: "(?i)美国|USA|States|US|🇺🇸|日本|JP|Japan|🇯🇵|台湾|TW|Taiwan|🇹🇼|新加坡|SG|Singapore|🇸🇬|韩国|KR|Korea|🇰🇷|英国|UK|🇬🇧"
+    <<: *use_all_provider
 
   - name: OpenAI
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
     proxies:
       - Google/Gemini
-      - 美国节点
-      - 日本节点
-      - 新加坡节点
-      - 台湾节点
-      - 韩国节点
-      - 其他地区
-
-  - name: Google/Gemini
-    type: select
-    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
-    proxies:
       - 美国节点
       - 日本节点
       - 新加坡节点
@@ -708,7 +690,7 @@ rules:
 
   # 4. AI 服务
   - RULE-SET,OpenAI,OpenAI
-  - RULE-SET,AI,AI服务
+  - RULE-SET,AI,OpenAI
 
   # 5. Google & Gemini
   - RULE-SET,Google,Google/Gemini
