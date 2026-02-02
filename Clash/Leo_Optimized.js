@@ -1,12 +1,12 @@
 /**
  * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
  * Leo Bennett 专属优化版
- * V4.0 (2026-02-02)
+ * V4.1 (2026-02-02)
  * * 🛠️ 优化日志：
  * 1. [重构] 全面升级 MRS 规则源 (Fake-IP/CN/Private/各类应用)，大幅提升加载速度
  * 2. [优化] 引入 "Fake-IP-Filter" 远程规则集，自动管理 Fake-IP 域名
  * 3. [优化] 采用 "OR" 逻辑合并直连规则，精简分流逻辑
- * 4. [修复] 修复 "int ranges error" 报错 (端口范围严格生成)
+ * 4. [修复] 修复 "int ranges error" 报错 (采用字符串端口范围写法 "8080-8880")
  * 5. [修复] 适配新版内核，移除废弃的 global-client-fingerprint
  * 6. [体验] 保持原有的电报/Emby/流媒体分流策略不变
  */
