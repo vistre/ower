@@ -63,20 +63,20 @@ proxy-providers:
     <<: *p
     override:
       additional-prefix: "Main："
-    path: ./proxies/1.主要地址.yaml
+    path: ./proxy_provider/proxy1.yaml
     url: "此处引入您的Clash订阅链接地址"
-  2.备用地址:
-    <<: *p
-    override:
-      additional-prefix: "Minor："
-    path: ./proxies/2.备用地址.yaml
-    url: "此处引入您的Clash订阅链接地址"
-  3.额外地址:
-    <<: *p
-    override:
-      additional-prefix: "Additi："
-    path: ./proxies/3.额外地址.yaml
-    url: "此处引入您的Clash订阅链接地址"
+#  2.备用地址:
+#    <<: *p
+#    override:
+#      additional-prefix: "Minor："
+#    path: ./proxy_provider/proxy2.yaml
+#    url: "此处引入您的Clash订阅链接地址"
+#  3.额外地址:
+#    <<: *p
+#    override:
+#      additional-prefix: "Additi："
+#    path: ./proxy_provider/proxy3.yaml
+#    url: "此处引入您的Clash订阅链接地址"
 
 profile:
   store-selected: true
