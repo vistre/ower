@@ -21,6 +21,9 @@ external-ui: ./dashboard
 secret: ""
 
 geox-url:
+  geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
   asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
 
 experimental:
@@ -491,10 +494,6 @@ rule-providers:
     path: ./rules/fakeip-filter.mrs
     url: "https://ghfast.top/github.com/DustinWin/ruleset_geodata/raw/refs/heads/mihomo-ruleset/fakeip-filter.mrs"
   
-  自定义规则:
-    <<: *Local
-    path: ./etc/自定义规则.list
-
   WebRTC:
     <<: *Classical
     path: ./rules/WebRTC.list
