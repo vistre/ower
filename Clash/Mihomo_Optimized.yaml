@@ -1,6 +1,6 @@
 # —————————
 # Mihomo Optimized Configuration
-# Version: V4.8
+# Version: V4.9
 # Update: 2026-02-03
 # —————————
 # 基础设置
@@ -196,7 +196,7 @@ proxy-groups:
   - name: Google/Gemini
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
-    filter: "(?i)美国|USA|States|US|🇺🇸|日本|JP|Japan|🇯🇵|台湾|TW|Taiwan|🇹🇼|新加坡|SG|Singapore|🇸🇬|韩国|KR|Korea|🇰🇷|英国|UK|🇬🇧"
+    filter: "(?i)(美国|USA|States|US|🇺🇸|日本|JP|Japan|🇯🇵|台湾|TW|Taiwan|🇹🇼|新加坡|SG|Singapore|🇸🇬|韩国|KR|Korea|🇰🇷|英国|UK|🇬🇧|澳洲|Australia|AU|🇦🇺|加拿大|Canada|CA|🇨🇦|法国|France|FR|🇫🇷|荷兰|Netherlands|NL|🇳🇱|意大利|Italy|IT|🇮🇹|瑞士|Switzerland|CH|🇨🇭|阿联酋|Dubai|UAE|�🇪|亚美尼亚|Armenia|AM|🇦🇲|捷克|Czech|CZ|🇨🇿|芬兰|Finland|FI|🇫🇮|希腊|Greece|GR|�🇷|以色列|Israel|IL|🇮🇱|列支敦士登|Liechtenstein|LI|🇱🇮|挪威|Norway|NO|🇳🇴|波兰|Poland|PL|🇵🇱|葡萄牙|Portugal|PT|🇵🇹|斯洛伐克|Slovakia|SK|🇸🇰|阿尔巴尼亚|Albania|AL|🇦🇱|奥地利|Austria|AT|🇦🇹|比利时|Belgium|BE|🇧🇪|保加利亚|Bulgaria|BG|🇧🇬|克罗地亚|Croatia|HR|🇭🇷|匈牙利|Hungary|HU|🇭🇺|冰岛|Iceland|IS|🇮🇸|爱尔兰|Ireland|IE|🇮🇪|拉脱维亚|Latvia|LV|🇱�|立陶宛|Lithuania|LT|🇱🇹|罗马尼亚|Romania|RO|🇷🇴|塞尔维亚|Serbia|RS|🇷🇸|斯洛文尼亚|Slovenia|SI|🇸🇮|西班牙|Spain|ES|🇪🇸)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
     <<: *use_all_provider
 
   - name: OpenAI
