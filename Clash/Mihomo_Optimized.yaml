@@ -1,4 +1,8 @@
 # —————————
+# Mihomo Optimized Configuration
+# Version: V4.0
+# Update: 2026-02-02
+# —————————
 # 基础设置
 mixed-port: 7890
 redir-port: 9797
