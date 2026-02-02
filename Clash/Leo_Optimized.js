@@ -27,9 +27,23 @@ function main(config) {
     config["keep-alive-interval"] = 15;
 
     // 开启 TCP 并发 (低延迟)
+    // 开启 TCP 并发 (低延迟)
     config["tcp-concurrent"] = true;
-    // 模拟 Chrome 指纹 (防断流)
-    config["global-client-fingerprint"] = "chrome";
+
+    // 移除废弃的 global-client-fingerprint
+    // config["global-client-fingerprint"] = "chrome";
+
+    // 遍历所有节点，手动添加指纹 (适配新版内核)
+    if (config.proxies && Array.isArray(config.proxies)) {
+      config.proxies.forEach(function (proxy) {
+        // 仅对支持 TLS 的节点添加指纹
+        if (proxy.tls || proxy.network === 'ws' || proxy.network === 'grpc') {
+          if (!proxy["client-fingerprint"]) {
+            proxy["client-fingerprint"] = "chrome";
+          }
+        }
+      });
+    }
 
     config["external-controller"] = "0.0.0.0:9090";
     config["external-ui"] = "ui";
