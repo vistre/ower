@@ -101,7 +101,6 @@ dns:
   nameserver: [tls://dns.google, tls://1.1.1.1]
   nameserver-policy:
     'services.googleapis.cn': '1.1.1.1' # 小米系统修复
-    "RULE-SET:CN,Private,Apple,GoogleCN,GamesCN": [tls://dns.alidns.com, tls://dot.pub]
     "RULE-SET:Geolocation_NotCN": [tls://dns.google, tls://1.1.1.1]
 
 # 4. 策略组
