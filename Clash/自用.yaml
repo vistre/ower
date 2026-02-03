@@ -1,9 +1,7 @@
-# —————————
-# Mihomo Optimized Configuration
-# Version: V4.9
-# Update: 2026-02-03
-# —————————
-# 基础设置
+# Mihomo Configuration | Leo Bennett | V4.13
+# Update: 2026-02-03 (Chapter 2 Integrated)
+
+# 1. 基础设置
 mixed-port: 7890
 redir-port: 9797
 tproxy-port: 9898
@@ -12,9 +10,9 @@ bind-address: '*'
 ipv6: true
 allow-lan: true
 unified-delay: false
-tcp-concurrent: true
 log-level: error
 find-process-mode: always
+tcp-concurrent: true # 开启 TCP 并发
 
 external-controller: 0.0.0.0:9090
 external-ui: ./dashboard
@@ -34,15 +32,12 @@ experimental:
       - name: "Accept-Language"
         value: "en-US,en;q=0.9"
 
-# —————————
-# 其他优化配置
 disable-keep-alive: true
 geodata-mode: false
 geo-auto-update: false
 geo-update-interval: 24
 updatetime: &Time 86400
 
-# —————————
 # 锚点
 p: &p
   type: http
@@ -53,33 +48,17 @@ p: &p
     interval: 300
   proxy: 订阅更新
   header:
-      User-Agent:
-        - "ClashMetaForAndroid/2.11.2.Meta"
-        - "clash-verge/v2.2.3"
-        - "ClashforWindows/0.19.23"
-        - "clash.meta"
-        - "mihomo"
+      User-Agent: ["ClashMetaForAndroid/2.11.2.Meta", "clash-verge/v2.2.3", "ClashforWindows/0.19.23", "clash.meta", "mihomo"]
 
-# 订阅地址
+# 2. 代理提供者
 proxy-providers:
   proxy1:
     <<: *p
     override:
       additional-prefix: "Main："
+      client-fingerprint: chrome
     path: ./proxy_provider/proxy1.yaml
     url: "此处引入您的Clash订阅链接地址"
-#  proxy2:
-#    <<: *p
-#    override:
-#      additional-prefix: "Minor："
-#    path: ./proxy_provider/proxy2.yaml
-#    url: "此处引入您的Clash订阅链接地址"
-#  proxy3:
-#    <<: *p
-#    override:
-#      additional-prefix: "Additi："
-#    path: ./proxy_provider/proxy3.yaml
-#    url: "此处引入您的Clash订阅链接地址"
 
 profile:
   store-selected: true
@@ -91,34 +70,24 @@ sniffer:
   parse-pure-ip: true
   override-destination: true
   sniff:
-    HTTP:
-      ports: [80, "8080-8880"]
-      override-destination: true
-    TLS:
-      ports: [443, 8443]
-    QUIC:
-      ports: [443, 8443]
-  force-domain:
-    - "+.v2ex.com"
-  skip-domain:
-    - "Mijia Cloud"
-    - "+.push.apple.com"
+    HTTP: {ports: [80, "8080-8880"], override-destination: true}
+    TLS: {ports: [443, 8443]}
+    QUIC: {ports: [443, 8443]}
+  force-domain: ["+.v2ex.com"]
+  skip-domain: ["Mijia Cloud", "+.push.apple.com"]
 
 tun:
   enable: true
   device: Meta
   stack: mixed
-  dns-hijack:
-    - any:53
-    - tcp://any:53
+  dns-hijack: [any:53, tcp://any:53]
   udp-timeout: 300
   auto-route: true
   strict-route: true
   auto-redirect: false
   auto-detect-interface: true
 
-# —————————
-# DNS 模块
+# 3. DNS 设置
 dns:
   enable: true
   listen: ":1053"
@@ -126,58 +95,25 @@ dns:
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   respect-rules: true
-  fake-ip-filter:
-    - "RULE-SET:Fake-IP-Filter" # 引用外部规则集 (优化)
-    - "RULE-SET:CN"
-    - "RULE-SET:Private"
-    - "RULE-SET:GoogleFCM"
-    - "+.lan"
-    - "+.local"
-    - "+.msftconnecttest.com"
-    - "+.msftncsi.com"
-  default-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - 2400:3200::1
-  proxy-server-nameserver:
-    - tls://dns.alidns.com
-    - tls://dot.pub
-  nameserver:
-    - tls://dns.google
-    - tls://1.1.1.1
+  fake-ip-filter: ["RULE-SET:Fake-IP-Filter", "RULE-SET:CN", "RULE-SET:Private", "RULE-SET:GoogleFCM", "+.lan", "+.local", "+.msftconnecttest.com", "+.msftncsi.com"]
+  default-nameserver: [223.5.5.5, 119.29.29.29, 2400:3200::1]
+  proxy-server-nameserver: [tls://dns.alidns.com, tls://dot.pub]
+  nameserver: [tls://dns.google, tls://1.1.1.1]
   nameserver-policy:
-    "RULE-SET:CN,Private,Apple,GoogleCN,GamesCN":
-      - tls://dns.alidns.com
-      - tls://dot.pub
-    "RULE-SET:Geolocation_NotCN":
-      - tls://dns.google
-      - tls://1.1.1.1
+    'services.googleapis.cn': '1.1.1.1' # 小米系统修复
+    "RULE-SET:CN,Private,Apple,GoogleCN,GamesCN": [tls://dns.alidns.com, tls://dot.pub]
+    "RULE-SET:Geolocation_NotCN": [tls://dns.google, tls://1.1.1.1]
 
-# —————————
-# 策略组
+# 4. 策略组
 use_all_provider: &use_all_provider
-  use:
-    - proxy1
-    # - proxy2
-    # - proxy3
+  use: [proxy1]
 
 proxy-groups:
   # 🟢 第一梯队：控制中心
   - name: 节点选择
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
-    proxies:
-      - 自动选择
-      - 香港节点
-      - 台湾节点
-      - 日本节点
-      - 新加坡节点
-      - 美国节点
-      - 手动切换
-      - 低倍率节点
-      - 其他地区
-      - DIRECT
-      - REJECT
+    proxies: [自动选择, 香港节点, 台湾节点, 日本节点, 新加坡节点, 美国节点, 手动切换, 低倍率节点, 其他地区, DIRECT, REJECT]
 
   - name: 自动选择
     type: url-test
@@ -196,97 +132,51 @@ proxy-groups:
   - name: Google/Gemini
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
-    filter: "(?i)(美国|USA|States|US|🇺🇸|日本|JP|Japan|🇯🇵|台湾|TW|Taiwan|🇹🇼|新加坡|SG|Singapore|🇸🇬|韩国|KR|Korea|🇰🇷|英国|UK|🇬🇧|澳洲|Australia|AU|🇦🇺|加拿大|Canada|CA|🇨🇦|法国|France|FR|🇫🇷|荷兰|Netherlands|NL|🇳🇱|意大利|Italy|IT|🇮🇹|瑞士|Switzerland|CH|🇨🇭|阿联酋|Dubai|UAE|�🇪|亚美尼亚|Armenia|AM|🇦🇲|捷克|Czech|CZ|🇨🇿|芬兰|Finland|FI|🇫🇮|希腊|Greece|GR|�🇷|以色列|Israel|IL|🇮🇱|列支敦士登|Liechtenstein|LI|🇱🇮|挪威|Norway|NO|🇳🇴|波兰|Poland|PL|🇵🇱|葡萄牙|Portugal|PT|🇵🇹|斯洛伐克|Slovakia|SK|🇸🇰|阿尔巴尼亚|Albania|AL|🇦🇱|奥地利|Austria|AT|🇦🇹|比利时|Belgium|BE|🇧🇪|保加利亚|Bulgaria|BG|🇧🇬|克罗地亚|Croatia|HR|🇭🇷|匈牙利|Hungary|HU|🇭🇺|冰岛|Iceland|IS|🇮🇸|爱尔兰|Ireland|IE|🇮🇪|拉脱维亚|Latvia|LV|🇱�|立陶宛|Lithuania|LT|🇱🇹|罗马尼亚|Romania|RO|🇷🇴|塞尔维亚|Serbia|RS|🇷🇸|斯洛文尼亚|Slovenia|SI|🇸🇮|西班牙|Spain|ES|🇪🇸)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
+    filter: "(?i)(美国|USA|States|US|🇺🇸|日本|JP|Japan|🇯🇵|台湾|TW|Taiwan|🇹🇼|新加坡|SG|Singapore|🇸🇬|韩国|KR|Korea|🇰🇷|英国|UK|🇬🇧|澳洲|Australia|AU|🇦🇺|加拿大|Canada|CA|🇨🇦|法国|France|FR|🇫🇷|荷兰|Netherlands|NL|🇳🇱|意大利|Italy|IT|🇮🇹|瑞士|Switzerland|CH|🇨🇭|阿联酋|Dubai|UAE|🇪|亚美尼亚|Armenia|AM|🇦🇲|捷克|Czech|CZ|🇨🇿|芬兰|Finland|FI|🇫🇮|希腊|Greece|GR|🇷|以色列|Israel|IL|🇮🇱|列支敦士登|Liechtenstein|LI|🇱🇮|挪威|Norway|NO|🇳🇴|波兰|Poland|PL|🇵🇱|葡萄牙|Portugal|PT|🇵🇹|斯洛伐克|Slovakia|SK|🇸🇰|阿尔巴尼亚|Albania|AL|🇦🇱|奥地利|Austria|AT|🇦🇹|比利时|Belgium|BE|🇧🇪|保加利亚|Bulgaria|BG|🇧🇬|克罗地亚|Croatia|HR|🇭🇷|匈牙利|Hungary|HU|🇭🇺|冰岛|Iceland|IS|🇮🇸|爱尔兰|Ireland|IE|🇮🇪|拉脱维亚|Latvia|LV|🇱|立陶宛|Lithuania|LT|🇱🇹|罗马尼亚|Romania|RO|🇷🇴|塞尔维亚|Serbia|RS|🇷🇸|斯洛文尼亚|Slovenia|SI|🇸🇮|西班牙|Spain|ES|🇪🇸)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍))"
     <<: *use_all_provider
 
   - name: OpenAI
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
-    proxies:
-      - Google/Gemini
-      - 美国节点
-      - 日本节点
-      - 新加坡节点
-      - 台湾节点
-      - 韩国节点
-      - 其他地区
+    proxies: [Google/Gemini, 美国节点, 日本节点, 新加坡节点, 台湾节点, 韩国节点, 其他地区]
 
   # 🟡 第二梯队：流媒体 & 娱乐
   - name: Emby
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
     filter: "(?i)((香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|狮城|🇸🇬|美国|USA|States|US|🇺🇸|韩国|Korea|KR|🇰🇷)|(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍)(?!.*(日本|Japan|JP|🇯🇵))"
-    proxies:
-      - DIRECT
+    proxies: [DIRECT]
     <<: *use_all_provider
 
   - name: 油管视频
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png"
-    proxies:
-      - 自动选择
-      - 节点选择
-      - 香港节点
-      - 台湾节点
-      - 新加坡节点
-      - 日本节点
-      - 美国节点
-      - 韩国节点
-      - 低倍率节点
-      - 其他地区
+    proxies: [自动选择, 节点选择, 香港节点, 台湾节点, 新加坡节点, 日本节点, 美国节点, 韩国节点, 低倍率节点, 其他地区]
 
   - name: 奈飞视频
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png"
-    proxies:
-      - 自动选择
-      - 节点选择
-      - 新加坡节点
-      - 香港节点
-      - 台湾节点
-      - 日本节点
-      - 美国节点
-      - 韩国节点
-      - 低倍率节点
-      - 其他地区
+    proxies: [自动选择, 节点选择, 新加坡节点, 香港节点, 台湾节点, 日本节点, 美国节点, 韩国节点, 低倍率节点, 其他地区]
 
   - name: 国外媒体
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png"
-    proxies:
-      - 自动选择
-      - 节点选择
-      - 香港节点
-      - 台湾节点
-      - 新加坡节点
-      - 日本节点
-      - 美国节点
-      - 韩国节点
-      - 低倍率节点
-      - 其他地区
+    proxies: [自动选择, 节点选择, 香港节点, 台湾节点, 新加坡节点, 日本节点, 美国节点, 韩国节点, 低倍率节点, 其他地区]
 
   - name: 巴哈姆特
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bahamut.png"
-    proxies:
-      - 台湾节点
-      - 节点选择
-      - 自动选择
+    proxies: [台湾节点, 节点选择, 自动选择]
 
   - name: 哔哩哔哩
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/bilibili.png"
-    proxies:
-      - DIRECT
-      - 台湾节点
-      - 香港节点
+    proxies: [DIRECT, 台湾节点, 香港节点]
 
   - name: 网易音乐
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netease_Music.png"
-    proxies:
-      - DIRECT
-      - 节点选择
+    proxies: [DIRECT, 节点选择]
 
   # 🔵 第三梯队：常用服务
   - name: 电报消息
@@ -300,46 +190,24 @@ proxy-groups:
   - name: 微软服务
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png"
-    proxies:
-      - 节点选择
-      - DIRECT
-      - 美国节点
-      - 香港节点
-      - 台湾节点
+    proxies: [节点选择, DIRECT, 美国节点, 香港节点, 台湾节点]
 
   - name: 苹果服务
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png"
-    proxies:
-      - 节点选择
-      - DIRECT
-      - 美国节点
-      - 香港节点
-      - 台湾节点
+    proxies: [节点选择, DIRECT, 美国节点, 香港节点, 台湾节点]
 
   - name: 谷歌FCM
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
-    proxies:
-      - DIRECT
-      - 节点选择
-      - 美国节点
-      - 香港节点
-      - 台湾节点
-      - 日本节点
-      - 新加坡节点
+    proxies: [DIRECT, 节点选择, 美国节点, 香港节点, 台湾节点, 日本节点, 新加坡节点]
 
   - name: 游戏平台
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png"
-    proxies:
-      - 节点选择
-      - DIRECT
-      - 香港节点
-      - 日本节点
-      - 美国节点
+    proxies: [节点选择, DIRECT, 香港节点, 日本节点, 美国节点]
 
-  # ⚪ 第四梯队：地区自动测速 & 功能分类
+  # ⚪ 第四梯队：地区 & 功能
   - name: 低倍率节点
     type: select
     icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png"
@@ -406,101 +274,108 @@ proxy-groups:
     filter: "^(?!.*((?i)香港|Hong Kong|HK|🇭🇰|日本|Japan|JP|🇯🇵|美国|USA|States|US(?!tralia|tria)|🇺🇸|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|🇸🇬|韩国|Korea|KR|🇰🇷|官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍)).*$"
     <<: *use_all_provider
 
-  # 🟣 系统兜底
-  - name: 国内媒体
-    type: select
-    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/DomesticMedia.png"
-    proxies:
-      - DIRECT
-      - 香港节点
-      - 台湾节点
-
   - name: 全球直连
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png"
-    proxies:
-      - DIRECT
-      - 节点选择
+    proxies: [DIRECT, 节点选择]
 
   - name: 广告拦截
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png"
-    proxies:
-      - REJECT
-      - DIRECT
+    proxies: [REJECT, DIRECT]
   
   - name: 应用净化
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hijacking.png"
-    proxies:
-      - REJECT
-      - DIRECT
+    proxies: [REJECT, DIRECT]
 
   - name: 漏网之鱼
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png"
-    proxies:
-      - 节点选择
-      - 自动选择
-      - DIRECT
-      - 香港节点
-      - 台湾节点
-      - 日本节点
-      - 美国节点
+    proxies: [节点选择, 自动选择, DIRECT, 香港节点, 台湾节点, 日本节点, 美国节点]
 
   - name: 订阅更新
     type: select
     icon: "https://cdn.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
-    proxies:
-      - DIRECT
-      - 节点选择
+    proxies: [DIRECT, 节点选择]
 
-# —————————
-# 规则提供者 (Rule Providers) 
-rule-anchor:
-  Local: &Local
-    {type: file, behavior: classical, format: text}
-  Classical: &Classical
-    {type: http, behavior: classical, format: text, interval: *Time}
-  IPCIDR: &IPCIDR
-    {type: http, behavior: ipcidr, format: mrs, interval: *Time}
-  Domain: &Domain
-    {type: http, behavior: domain, format: mrs, interval: *Time}
-
+# 5. 规则提供者
 rule-providers:
-  Fake-IP-Filter: # 新增：远程 Fake-IP 过滤规则集
+  # —— Core & Safety ——
+  Fake-IP-Filter:
     type: http
     behavior: domain
     format: mrs
     interval: 86400
     path: ./rules/fakeip-filter.mrs
-    url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata/raw/refs/heads/mihomo-ruleset/fakeip-filter.mrs"
-  
-  WebRTC:
-    <<: *Classical
-    path: ./rules/WebRTC.list
-    url: "https://fastly.jsdelivr.net/gh/GitMetaio/Surfing@main/box_bll/clash/rules/WebRTC.list"
+    url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/fakeip-filter.mrs"
 
-  # ———— 新增功能规则 ————
-  AI:
-    <<: *Domain
-    path: ./rules/AI.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ai-chat-!cn.mrs"
-  
-  ProxyGFWlist:
+  Private:
     type: http
     behavior: domain
     format: mrs
     interval: 86400
-    path: ./rules/GFW.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs"
+    path: ./rules/Private.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs"
 
-  Geolocation_NotCN:
-    <<: *Domain
-    path: ./rules/Geolocation_NotCN.mrs
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"
+  Hijacking:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    path: ./rules/Hijacking.yaml
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Hijacking/Hijacking.yaml"
 
-  # ———— 权重：精细分流 (Blackmatrix7) ————
+  NoAds:
+    type: http
+    behavior: domain
+    format: yaml
+    interval: 86400
+    path: ./rules/AWAvenue-Ads.yaml
+    url: "https://fastly.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml"
+
+  # —— Domestic & Fallback ——
+  ChinaMax:
+    type: http
+    behavior: classical
+    format: text
+    interval: 86400
+    path: ./ruleset/ChinaMax.list
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax.list"
+
+  CN:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/CN.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs"
+
+  CN_IP:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    path: ./rules/CN_IP.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/cn.mrs"
+  
+  GoogleCN:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/GoogleCN.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google-cn.mrs"
+
+  BiliBili:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/BiliBili.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs"
+
+  # —— AI & Media ——
   OpenAI:
     type: http
     behavior: classical
@@ -517,254 +392,260 @@ rule-providers:
     path: ./rules/GlobalMedia.yaml
     url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GlobalMedia/GlobalMedia.yaml"
 
-  # ———— 权重：均衡拦截 (AWAvenue) ————
-  NoAds:
-    type: http
-    behavior: domain
-    format: yaml
-    interval: 86400
-    path: ./rules/AWAvenue-Ads.yaml
-    url: "https://fastly.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml"
-
-  # ———— 权重：基础底座 (MetaCubeX MRS) ————
-  CN:
+  YouTube:
     type: http
     behavior: domain
     format: mrs
     interval: 86400
-    path: ./rules/CN.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs"
-  CN_IP:
+    path: ./rules/YouTube.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs"
+  
+  Netflix:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/Netflix.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs"
+  Netflix_IP:
     type: http
     behavior: ipcidr
     format: mrs
     interval: 86400
-    path: ./rules/CN_IP.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/cn.mrs"
+    path: ./rules/Netflix_IP.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/netflix.mrs"
+  
+  NetEaseMusic:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    path: ./rules/NetEaseMusic.yaml
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/NetEaseMusic/NetEaseMusic.yaml"
+  
+  Bahamut:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    path: ./rules/Bahamut.yaml
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Bahamut/Bahamut.yaml"
 
-  # ———— 其他常用 MRS 规则 ————
-  GoogleCN:
-    <<: *Domain
-    path: ./rules/GoogleCN.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google-cn.mrs"
-  GamesCN:
-    <<: *Domain
-    path: ./rules/GamesCN.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-games@cn.mrs"
-
-  XiaoHongShu:
-    <<: *Domain
-    path: ./rules/XiaoHongShu.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/xiaohongshu.mrs"
-  DouYin:
-    <<: *Domain
-    path: ./rules/DouYin.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/douyin.mrs"
-  BiliBili:
-    <<: *Domain
-    path: ./rules/BiliBili.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs"
-  BiliBili_IP:
-    <<: *IPCIDR
-    path: ./rules/BiliBili_IP.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/bilibili.mrs"
+  # —— Gaming ——
   Steam:
-    <<: *Domain
-    path: ./rules/Steam.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs"
-  TikTok:
-    <<: *Domain
-    path: ./rules/TikTok.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.mrs"
-  Spotify:
-    <<: *Domain
-    path: ./rules/Spotify.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/spotify.mrs"
-  Facebook:
-    <<: *Domain
-    path: ./rules/Facebook.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/facebook.mrs"
-  Facebook_IP:
-    <<: *IPCIDR
-    path: ./rules/Facebook_IP.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/facebook.mrs"
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    path: ./rules/Steam.yaml
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Steam/Steam.yaml"
+    
+  Epic:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    path: ./rules/Epic.yaml
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Epic/Epic.yaml"
+    
+  Origin:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    path: ./rules/Origin.yaml
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Origin/Origin.yaml"
+    
+  Sony:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    path: ./rules/Sony.yaml
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Sony/Sony.yaml"
+    
+  Nintendo:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    path: ./rules/Nintendo.yaml
+    url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Nintendo/Nintendo.yaml"
+
+  # —— Apps & Social ——
   Telegram:
-    <<: *Domain
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
     path: ./rules/Telegram.mrs
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs"
   Telegram_IP:
-    <<: *IPCIDR
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
     path: ./rules/Telegram_IP.mrs
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/telegram.mrs"
-  YouTube:
-    <<: *Domain
-    path: ./rules/YouTube.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs"
-  Google:
-    <<: *Domain
-    path: ./rules/Google.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs"
-  Google_IP:
-    <<: *IPCIDR
-    path: ./rules/Google_IP.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/google.mrs"
-  GoogleFCM:
-    <<: *Domain
-    path: ./rules/GoogleFCM.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs"
+  
   Microsoft:
-    <<: *Domain
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
     path: ./rules/Microsoft.mrs
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs"
+
   Apple:
-    <<: *Domain
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
     path: ./rules/Apple.mrs
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs"
   Apple_IP:
-    <<: *IPCIDR
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
     path: ./rules/Apple_IP.mrs
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/apple.mrs"
-  Netflix:
-    <<: *Domain
-    path: ./rules/Netflix.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs"
-  Netflix_IP:
-    <<: *IPCIDR
-    path: ./rules/Netflix_IP.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/netflix.mrs"
-  Discord:
-    <<: *Domain
-    path: ./rules/Discord.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/discord.mrs"
+    
   GitHub:
-    <<: *Domain
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
     path: ./rules/GitHub.mrs
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs"
-  Twitter:
-    <<: *Domain
-    path: ./rules/Twitter.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs"
-  Twitter_IP:
-    <<: *IPCIDR
-    path: ./rules/Twitter_IP.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/twitter.mrs"
-  Private:
-    <<: *Domain
-    path: ./rules/Private.mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs"
 
-  # ———— 补充规则 (Text 格式) ————
-  NetEaseMusic:
-    <<: *Classical
-    path: ./ruleset/NetEaseMusic.list
-    url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/NetEaseMusic.list"
-  Bahamut:
-    <<: *Classical
-    path: ./ruleset/Bahamut.list
-    url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Bahamut.list"
-  Epic:
-    <<: *Classical
-    path: ./ruleset/Epic.list
-    url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Epic.list"
-  Origin:
-    <<: *Classical
-    path: ./ruleset/Origin.list
-    url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Origin.list"
-  Sony:
-    <<: *Classical
-    path: ./ruleset/Sony.list
-    url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Sony.list"
-  Nintendo:
-    <<: *Classical
-    path: ./ruleset/Nintendo.list
-    url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Nintendo.list"
+  GoogleFCM:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/GoogleFCM.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs"
 
+  # —— Google ——
+  Google:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/Google.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs"
+  Google_IP:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    path: ./rules/Google_IP.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/google.mrs"
 
-# —————————
-# 分流规则
+  ProxyGFWlist:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/GFW.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs"
+  
+  Geolocation_NotCN:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./rules/Geolocation_NotCN.mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"
+
+# 6. 分流规则
 rules:
-  # 1. 核心修复与最高权重直连 (Steam 内容直连是满速关键) 
+  # 1. 协议优化 (QUIC 阻断)
+  - AND,((NETWORK,udp),(DST-PORT,443)),REJECT
+
+  # 2. 工业级局域网与回环修正 (L1 - 确保 NAS、打印机 100% 直连)
+  - IP-CIDR,0.0.0.0/8,全球直连,no-resolve
+  - IP-CIDR,10.0.0.0/8,全球直连,no-resolve
+  - IP-CIDR,100.64.0.0/10,全球直连,no-resolve      # 运营商级 NAT (CGNAT)
+  - IP-CIDR,127.0.0.0/8,全球直连,no-resolve
+  - IP-CIDR,169.254.0.0/16,全球直连,no-resolve     # 链路本地地址 (APIPA)
+  - IP-CIDR,172.16.0.0/12,全球直连,no-resolve
+  - IP-CIDR,192.168.0.0/16,全球直连,no-resolve
+  - IP-CIDR,198.18.0.0/15,全球直连,no-resolve      # Fake-IP 保留区
+  - IP-CIDR,224.0.0.0/4,全球直连,no-resolve        # 组播流量
+  - IP-CIDR6,::1/128,全球直连,no-resolve          # IPv6 回环
+  - IP-CIDR6,fc00::/7,全球直连,no-resolve         # IPv6 唯一本地地址
+  - IP-CIDR6,fe80::/10,全球直连,no-resolve        # IPv6 链路本地地址
+  - DOMAIN-SUFFIX,local,全球直连
+  - DOMAIN-SUFFIX,lan,全球直连
+  # 双重保险
+  - RULE-SET,Private,全球直连
+
+  # 3. Steam 下载满速优化 (最高权重直连)
   - DOMAIN-SUFFIX,steamcontent.com,全球直连
   - DOMAIN,steamcdn-a.akamaihd.net,全球直连
   - DOMAIN-SUFFIX,cm.steampowered.com,全球直连
+  - DOMAIN-SUFFIX,steamserver.net,全球直连
+  - DOMAIN-SUFFIX,steamchina.com,全球直连
+
+  # 3.1 核心修复
   - DOMAIN-SUFFIX,googleapis.cn,Google/Gemini
+  - DOMAIN-SUFFIX,googlevideo.com,Google/Gemini
   - DST-PORT,123,全球直连
 
-  # 1.1 自定义规则保留
-  - DOMAIN-KEYWORD,adobe,REJECT
-  - DOMAIN-KEYWORD,pilipili,DIRECT
+  # 3.2 自定义保留
+  - DOMAIN-KEYWORD,pilipili,全球直连
   - DOMAIN-KEYWORD,embyplus,Emby
-  - DOMAIN-SUFFIX,cdn.bgp.yt,DIRECT
-  - DOMAIN-SUFFIX,media.nijigem.by,DIRECT
-  - DOMAIN-SUFFIX,steamtools.net,DIRECT
-  - DOMAIN-KEYWORD,steamtools,DIRECT
+  - DOMAIN-SUFFIX,cdn.bgp.yt,全球直连
+  - DOMAIN-SUFFIX,media.nijigem.by,全球直连
+  - DOMAIN-SUFFIX,steamtools.net,全球直连
+  - DOMAIN-KEYWORD,steamtools,全球直连
   - DOMAIN-SUFFIX,challenges.clouflare.com,节点选择
-  - DOMAIN,v1.uhdnow.com,DIRECT
-  - DOMAIN-SUFFIX,rainbowsky.xyz,DIRECT
-  - DOMAIN-SUFFIX,steamserver.net,DIRECT
-  - DOMAIN-SUFFIX,googlevideo.com,Google/Gemini
+  - DOMAIN,v1.uhdnow.com,全球直连
+  - DOMAIN-SUFFIX,rainbowsky.xyz,全球直连
 
-  # 2. 基础设施 & 局域网 (L1)
-  - IP-CIDR,192.168.0.0/16,全球直连,no-resolve
-  - IP-CIDR,10.0.0.0/8,全球直连,no-resolve
-  - IP-CIDR,127.0.0.0/8,全球直连,no-resolve
-  - IP-CIDR,172.16.0.0/12,全球直连,no-resolve
-  - DOMAIN,ntp.aliyun.com,全球直连
-  - DOMAIN,time.apple.com,全球直连
-  - DOMAIN,time.windows.com,全球直连
-
-  # 2.1 常见直连优化
-  - OR,((RULE-SET,Private),(RULE-SET,CN_IP)),全球直连
-
-  # 3. 广告拦截 (L2)
+  # 4. 广告拦截 & 安全 (L2)
+  - DST-PORT,3478,REJECT # 拦截 WebRTC STUN
   - RULE-SET,NoAds,广告拦截
+  - RULE-SET,Hijacking,应用净化
   - DOMAIN-KEYWORD,adobe,REJECT
 
-  # 4. 高权重精细媒体分流 (更换为 GlobalMedia，整合原海外媒体)
-  - RULE-SET,GlobalMedia,国外媒体
+  # 5. 媒体分流 (L3 - Specific > Global)
   - RULE-SET,YouTube,油管视频
   - RULE-SET,Netflix,奈飞视频
   - RULE-SET,Netflix_IP,奈飞视频,no-resolve
   - RULE-SET,Bahamut,巴哈姆特
   - RULE-SET,NetEaseMusic,网易音乐
-  - RULE-SET,Spotify,国外媒体
-  - RULE-SET,TikTok,国外媒体
-  - RULE-SET,Discord,国外媒体
-  - RULE-SET,Facebook,国外媒体
-  - RULE-SET,Facebook_IP,国外媒体,no-resolve
-  - RULE-SET,Twitter,国外媒体
-  - RULE-SET,Twitter_IP,国外媒体,no-resolve
+  - RULE-SET,BiliBili,哔哩哔哩
+  # GlobalMedia 作为国外媒体兜底
+  - RULE-SET,GlobalMedia,国外媒体
 
-  # 5. AI 服务 (L3)
+  # 6. AI 服务
   - RULE-SET,OpenAI,OpenAI
-  - RULE-SET,AI,OpenAI
 
-  # 6. 系统服务与国内 App 分流 (L4)
+  # 7. 社交、开发与基础服务 (L4)
   - RULE-SET,Telegram,电报消息
   - RULE-SET,Telegram_IP,电报消息,no-resolve
   - RULE-SET,Microsoft,微软服务
   - RULE-SET,Apple,苹果服务
   - RULE-SET,Apple_IP,苹果服务,no-resolve
-  - RULE-SET,BiliBili,哔哩哔哩
-    # 注意：DouYin, XiaoHongShu 等国内应用已包含在 CN/CN_IP 中，但若想强制直连可保留
-  - RULE-SET,DouYin,全球直连
-  - RULE-SET,XiaoHongShu,全球直连
   - RULE-SET,Google,Google/Gemini
   - RULE-SET,Google_IP,Google/Gemini,no-resolve
   - RULE-SET,GoogleFCM,谷歌FCM
-
-  # 7. 游戏平台
   - RULE-SET,GitHub,节点选择
+
+  # 8. 游戏平台
   - RULE-SET,Steam,游戏平台
   - RULE-SET,Epic,游戏平台
   - RULE-SET,Origin,游戏平台
   - RULE-SET,Sony,游戏平台
   - RULE-SET,Nintendo,游戏平台
 
-  # 8. 兜底逻辑 (优化: 已知被墙流量优先匹配)
+  # 9. 最终兜底逻辑 (去重与性能优化版)
   - RULE-SET,ProxyGFWlist,节点选择
-  - RULE-SET,Geolocation_NotCN,节点选择
   - RULE-SET,CN,全球直连
   - RULE-SET,CN_IP,全球直连,no-resolve
+  - RULE-SET,ChinaMax,全球直连
   - GEOIP,CN,全球直连,no-resolve
   - MATCH,漏网之鱼
