@@ -1,14 +1,12 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.1 (Refactored) | Update: 2026-02-04
+ * Ver 5.2 (Clean) | Update: 2026-02-04
  */
 
 function main(config) {
   try {
-    // ==============================================================================
-    // 0. 辅助函数 (Helpers)
-    // ==============================================================================
+    // 0. 辅助函数
     const createProvider = (url, path, type = "http", behavior = "domain", format = "mrs", interval = 86400) => ({
       type, behavior, format, interval, path, url
     });
@@ -28,9 +26,7 @@ function main(config) {
       return group;
     };
 
-    // ==============================================================================
-    // 1. 基础设置 (General)
-    // ==============================================================================
+    // 1. 基础设置
     const generalConfig = {
       "socks-port": 7891,
       "mixed-port": 7890,
@@ -63,7 +59,7 @@ function main(config) {
       }]
     };
 
-    // 手动添加指纹 (TLS Fingerprint)
+    // 手动添加指纹
     if (Array.isArray(config.proxies)) {
       config.proxies.forEach(p => {
         if ((p.tls || p.network === 'ws' || p.network === 'grpc') && !p["client-fingerprint"]) {
@@ -72,9 +68,7 @@ function main(config) {
       });
     }
 
-    // ==============================================================================
-    // 2. 内核功能 (Core)
-    // ==============================================================================
+    // 2. 内核功能
     config["tun"] = {
       enable: true,
       stack: "mixed",
@@ -105,9 +99,7 @@ function main(config) {
       asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
     };
 
-    // ==============================================================================
     // 3. DNS 配置
-    // ==============================================================================
     config["dns"] = {
       enable: true,
       listen: ":1053",
@@ -133,9 +125,7 @@ function main(config) {
       ]
     };
 
-    // ==============================================================================
-    // 4. 规则提供者 (Rule Providers)
-    // ==============================================================================
+    // 4. 规则提供者
     config["rule-providers"] = {
       // Core
       "Fake-IP-Filter": createProvider("https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/fakeip-filter.mrs", "./rules/fakeip-filter.mrs"),
@@ -174,12 +164,9 @@ function main(config) {
       "ProxyGFWlist": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs", "./rules/GFW.mrs"),
     };
 
-    // ==============================================================================
-    // 5. 策略组 (Proxy Groups)
-    // ==============================================================================
+    // 5. 策略组
     const filterAll = "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|倍|free|low|公益))";
 
-    // 图标常量 (可选: 进一步提取)
     const Icons = {
       Proxy: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
       Auto: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png",
@@ -247,9 +234,7 @@ function main(config) {
       createGroup("订阅更新", "select", Icons.Update, ["DIRECT", "节点选择"])
     ];
 
-    // ==============================================================================
-    // 6. 分流规则 (Rules)
-    // ==============================================================================
+    // 6. 分流规则
     config["rules"] = [
       "IP-CIDR,0.0.0.0/8,全球直连,no-resolve",
       "IP-CIDR,10.0.0.0/8,全球直连,no-resolve",
