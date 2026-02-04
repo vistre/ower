@@ -1,10 +1,8 @@
 # Mihomo Configuration | Leo Bennett | Optimized
-# Update: 2026-02-03
+# Ver 5.0 | Update: 2026-02-04
 # Core: Meta | Mode: Rule
 
-# ——————————————————————————————
-# 1. 基础设置 (General)
-# ——————————————————————————————
+# 1. 基础设置
 mixed-port: 7890
 redir-port: 9797
 tproxy-port: 9898
@@ -30,13 +28,10 @@ experimental:
       - name: "User-Agent"
         value: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36"
 
-# ——————————————————————————————
-# 2. 系统接口 & 流量识别 (Interface & Sniffer)
-# ——————————————————————————————
-# TUN 模式：虚拟网卡，接管系统流量的核心
+# 2. 系统接口 & 流量识别
 tun:
   enable: true
-  stack: mixed # mixed / gvisor / system
+  stack: mixed
   device: meta
   mtu: 9000
   dns-hijack:
@@ -48,7 +43,6 @@ tun:
   auto-detect-interface: true
   include-android-user: [0, 10]
 
-# 流量嗅探：准确识别 HTTPS/QUIC 流量的域名
 sniffer:
   enable: true
   parse-pure-ip: true
@@ -57,60 +51,62 @@ sniffer:
     HTTP: {ports: [80, 8080-8880], override-destination: true}
     QUIC: {ports: [443, 8443]}
 
-# ——————————————————————————————
-# 3. DNS 设置 (Name Resolution)
-# ——————————————————————————————
+# 3. DNS 设置
 dns:
   enable: true
-  listen: "127.0.0.1:5335"
-  use-system-hosts: false
-  ipv6: false
+  listen: :1053
+  use-hosts: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  respect-rules: true
+  ipv6: false
   
-  # 默认 DNS (解析国外)
-  default-nameserver: 
+  # 默认 DNS
+  nameserver:
     - 223.5.5.5
     - 119.29.29.29
-    - 8.8.8.8
-  
-  # 主 DNS 池
-  nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
-    - https://cloudflare-dns.com/dns-query
-    - https://dns.google/dns-query
-  
-  # 分流策略：国内强制走国内 DNS
+    
+  # 代理 DNS
+  proxy-server-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
   nameserver-policy:
-    "geosite:cn,private": [223.5.5.5, 119.29.29.29]
-  
+    'rule-set:CN,Private,BiliBili,DouYin':
+      - 223.5.5.5
+      - 119.29.29.29
+
+  # 回退
   fallback:
+    - https://8.8.8.8/dns-query
     - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    - https://doh.dns.sb/dns-query
-    - tls://8.8.4.4
   
   fallback-filter:
     geoip: true
-    ipcidr: [240.0.0.0/4, 0.0.0.0/32, 127.0.0.1/32]
-    domain: [+.google.com, +.facebook.com, +.twitter.com, +.youtube.com, +.googleapis.com]
+    geoip-code: CN
+    ipcidr: [240.0.0.0/4]
 
-  fake-ip-filter: ["*.lan", "stun.*", "time.*", "ntp.*", "*.ntp.org.cn", "*.openwrt.pool.ntp.org", "time1.cloud.tencent.com", "*.edu.cn", "music.163.com", "*.music.163.com", "*.126.net", "*.kuwo.cn", "y.qq.com", "*.y.qq.com", "*.music.migu.cn", "music.migu.cn", "*.msftconnecttest.com", "*.msftncsi.com", "localhost.ptlogin2.qq.com", "*.srv.nintendo.net", "*.stun.playstation.net", "xbox.*.microsoft.com", "*.xboxlive.com"]
+  # Fake-IP 过滤
+  fake-ip-filter:
+    - "+.lan"
+    - "+.local"
+    - "stun.*"
+    - "work.weixin.qq.com"
+    - "xbox.*.microsoft.com"
+    - "+.battlenet.com.cn"
+    - "+.servicewechat.com"
+    - "+.tenpay.com"
+    - "+.qq.com"
+    - "+.music.163.com"
 
-# ——————————————————————————————
-# 4. 资源路径 (Resources)
-# ——————————————————————————————
+# 4. 资源路径
 geox-url:
   geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
   geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
   mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
   asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
 
-# ——————————————————————————————
-# 5. 代理提供者 (Proxy Providers)
-# ——————————————————————————————
-# 公用锚点配置
+# 5. 代理提供者
 p: &p
   health-check:
     enable: true
@@ -125,17 +121,14 @@ proxy-providers:
     path: proxy_provider/proxy1.yaml
     <<: *p
 
-# ——————————————————————————————
-# 6. 策略组 (Proxy Groups)
-# ——————————————————————————————
+# 6. 策略组
 use_all_provider: &use_all_provider
   use: [proxy1]
 
-# 常用正则过滤器
 filter_all: &filter_all "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|倍|free|low|公益))"
 
 proxy-groups:
-  # 🟢 第一梯队：控制中心
+  # 控制中心
   - name: 节点选择
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
@@ -166,7 +159,7 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
     proxies: [Google/Gemini, 美国节点, 日本节点, 新加坡节点, 台湾节点, 韩国节点, 其他地区]
 
-  # 🟡 第二梯队：流媒体 & 娱乐
+  # 流媒体 & 娱乐
   - name: Emby
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
@@ -204,7 +197,7 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netease_Music.png"
     proxies: [DIRECT, 节点选择]
 
-  # 🔵 第三梯队：常用服务
+  # 常用服务
   - name: 电报消息
     type: url-test
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
@@ -233,7 +226,7 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png"
     proxies: [节点选择, DIRECT, 香港节点, 日本节点, 美国节点]
 
-  # ⚪ 第四梯队：地区 & 功能
+  # 地区 & 功能
   - name: 低倍率节点
     type: select
     icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png"
@@ -314,11 +307,9 @@ proxy-groups:
     icon: "https://cdn.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
     proxies: [DIRECT, 节点选择]
 
-# ——————————————————————————————
-# 7. 规则提供者 (Rule Providers)
-# ——————————————————————————————
+# 7. 规则提供者
 rule-providers:
-  # —— Core & Safety ——
+  # 核心 & 安全
   Fake-IP-Filter:
     type: http
     behavior: domain
@@ -337,13 +328,13 @@ rule-providers:
 
   NoAds:
     type: http
-    behavior: classical # 修正：AWAvenue 包含关键字规则，必须使用 classical
+    behavior: classical
     format: yaml
     interval: 86400
     path: ./rules/AWAvenue-Ads.yaml
     url: "https://testingcf.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml"
 
-  # —— Domestic ——
+  # 国内
   ChinaMax:
     type: http
     behavior: classical
@@ -384,7 +375,7 @@ rule-providers:
     path: ./rules/BiliBili.mrs
     url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs"
 
-  # —— AI & Media ——
+  # AI & 媒体
   OpenAI:
     type: http
     behavior: classical
@@ -441,7 +432,7 @@ rule-providers:
     path: ./rules/Bahamut.yaml
     url: "https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Bahamut/Bahamut.yaml"
 
-  # —— Gaming ——
+  # 游戏
   Steam:
     type: http
     behavior: classical
@@ -482,7 +473,7 @@ rule-providers:
     path: ./rules/Nintendo.yaml
     url: "https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Nintendo/Nintendo.yaml"
 
-  # —— Apps & Social ——
+  # 社交 & 基础
   Telegram:
     type: http
     behavior: domain
@@ -539,7 +530,7 @@ rule-providers:
     path: ./rules/GoogleFCM.mrs
     url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs"
 
-  # —— Google & GFW ——
+  # Google & GFW
   Google:
     type: http
     behavior: domain
@@ -564,11 +555,9 @@ rule-providers:
     path: ./rules/GFW.mrs
     url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs"
 
-# ——————————————————————————————
-# 8. 分流规则 (Rules)
-# ——————————————————————————————
+# 8. 分流规则
 rules:
-  # 2. 工业级局域网与回环修正 (L1)
+  # 2. 局域网 & 直连
   - IP-CIDR,0.0.0.0/8,全球直连,no-resolve
   - IP-CIDR,10.0.0.0/8,全球直连,no-resolve
   - IP-CIDR,100.64.0.0/10,全球直连,no-resolve
@@ -592,9 +581,13 @@ rules:
   - DOMAIN-SUFFIX,steamchina.com,全球直连
 
   # 3.1 核心修复
-  - DOMAIN-SUFFIX,googleapis.cn,Google/Gemini
   - DOMAIN-SUFFIX,googlevideo.com,Google/Gemini
-  - DST-PORT,123,全球直连
+  - DOMAIN-SUFFIX,gvt1.com,Google/Gemini
+  - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,Google/Gemini
+  - DOMAIN,googleapis.cn,Google/Gemini
+  - DOMAIN,googleapis.com,Google/Gemini
+  - RULE-SET,Google,Google/Gemini
+  - RULE-SET,Google_IP,Google/Gemini,no-resolve
 
   # 3.2 自定义保留
   - DOMAIN-KEYWORD,pilipili,全球直连
@@ -603,14 +596,14 @@ rules:
   - DOMAIN-SUFFIX,media.nijigem.by,全球直连
   - DOMAIN-SUFFIX,steamtools.net,全球直连
   - DOMAIN-KEYWORD,steamtools,全球直连
-  - DOMAIN-SUFFIX,challenges.clouflare.com,节点选择
+  - DOMAIN-SUFFIX,challenges.cloudflare.com,节点选择
   - DOMAIN,v1.uhdnow.com,全球直连
   - DOMAIN-SUFFIX,rainbowsky.xyz,全球直连
 
-  # 4. 广告拦截 (L2)
+  # 4. 广告拦截
   - RULE-SET,NoAds,广告拦截
 
-  # 5. 媒体分流 (L3)
+  # 5. 媒体分流
   - RULE-SET,DouYin,全球直连
   - RULE-SET,YouTube,油管视频
   - RULE-SET,Netflix,奈飞视频
@@ -623,14 +616,12 @@ rules:
   # 6. AI 服务
   - RULE-SET,OpenAI,OpenAI
 
-  # 7. 社交、开发与基础服务 (L4)
+  # 7. 社交 & 基础服务
   - RULE-SET,Telegram,电报消息
   - RULE-SET,Telegram_IP,电报消息,no-resolve
   - RULE-SET,Microsoft,微软服务
   - RULE-SET,Apple,苹果服务
   - RULE-SET,Apple_IP,苹果服务,no-resolve
-  - RULE-SET,Google,Google/Gemini
-  - RULE-SET,Google_IP,Google/Gemini,no-resolve
   - RULE-SET,GoogleFCM,谷歌FCM
   - RULE-SET,GitHub,节点选择
 
@@ -641,7 +632,7 @@ rules:
   - RULE-SET,Sony,游戏平台
   - RULE-SET,Nintendo,游戏平台
 
-  # 9. 最终兜底逻辑
+  # 9. 最终兜底
   - RULE-SET,ProxyGFWlist,节点选择
   - RULE-SET,CN,全球直连
   - RULE-SET,CN_IP,全球直连,no-resolve
