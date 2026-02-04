@@ -1,511 +1,334 @@
 /**
- * Mihomo Party / Clash Verge Rev 专用 JS 覆写脚本
- * Leo Bennett 专属优化版
- * V4.1 (2026-02-02)
- * * 🛠️ 优化日志：
- * 1. [重构] 全面升级 MRS 规则源 (Fake-IP/CN/Private/各类应用)，大幅提升加载速度
- * 2. [优化] 引入 "Fake-IP-Filter" 远程规则集，自动管理 Fake-IP 域名
- * 3. [优化] 采用 "OR" 逻辑合并直连规则，精简分流逻辑
- * 4. [修复] 修复 "int ranges error" 报错 (采用字符串端口范围写法 "8080-8880")
- * 5. [修复] 适配新版内核，移除废弃的 global-client-fingerprint
- * 6. [体验] 保持原有的电报/Emby/流媒体分流策略不变
+ * Mihomo Configuration Script
+ * Leo Bennett | Optimized
+ * Ver 5.1 (Refactored) | Update: 2026-02-04
  */
 
 function main(config) {
   try {
     // ==============================================================================
-    // 1. 基础设置
+    // 0. 辅助函数 (Helpers)
     // ==============================================================================
-    config["port"] = 7890;
-    config["socks-port"] = 7891;
-    config["mixed-port"] = 7890;
-    config["allow-lan"] = true;
-    config["bind-address"] = "*";
-    config["unified-delay"] = true;
-    config["keep-alive-interval"] = 15;
+    const createProvider = (url, path, type = "http", behavior = "domain", format = "mrs", interval = 86400) => ({
+      type, behavior, format, interval, path, url
+    });
 
-    // 开启 TCP 并发 (低延迟)
-    // 开启 TCP 并发 (低延迟)
-    config["tcp-concurrent"] = true;
+    const createGroup = (name, type, icon, proxies_or_filter, options = {}) => {
+      const group = {
+        name, type, icon,
+        ...options
+      };
+      // 自动判断是 proxies 数组还是 filter 字符串
+      if (Array.isArray(proxies_or_filter)) {
+        group.proxies = proxies_or_filter;
+      } else if (typeof proxies_or_filter === "string") {
+        group.filter = proxies_or_filter;
+        group["include-all"] = true; // 只要有 filter，通常都开启 include-all
+      }
+      return group;
+    };
 
-    // 移除废弃的 global-client-fingerprint
-    // config["global-client-fingerprint"] = "chrome";
+    // ==============================================================================
+    // 1. 基础设置 (General)
+    // ==============================================================================
+    const generalConfig = {
+      "socks-port": 7891,
+      "mixed-port": 7890,
+      "redir-port": 9797,
+      "tproxy-port": 9898,
+      "mode": "Rule",
+      "ipv6": false,
+      "allow-lan": true,
+      "bind-address": "*",
+      "unified-delay": false,
+      "log-level": "error",
+      "find-process-mode": "always",
+      "tcp-concurrent": true,
+      "keep-alive-interval": 30,
+      "external-controller": "127.0.0.1:9090",
+      "external-ui": "./dashboard",
+      "secret": ""
+    };
+    Object.assign(config, generalConfig);
 
-    // 遍历所有节点，手动添加指纹 (适配新版内核)
-    if (config.proxies && Array.isArray(config.proxies)) {
-      config.proxies.forEach(function (proxy) {
-        // 仅对支持 TLS 的节点添加指纹
-        if (proxy.tls || proxy.network === 'ws' || proxy.network === 'grpc') {
-          if (!proxy["client-fingerprint"]) {
-            proxy["client-fingerprint"] = "chrome";
-          }
+    if (!config.profile) config.profile = {};
+    config.profile["store-selected"] = true;
+    config.profile["store-fake-ip"] = true;
+
+    if (!config.experimental) config.experimental = {};
+    config.experimental["http-headers"] = {
+      "request": [{
+        "name": "User-Agent",
+        "value": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36"
+      }]
+    };
+
+    // 手动添加指纹 (TLS Fingerprint)
+    if (Array.isArray(config.proxies)) {
+      config.proxies.forEach(p => {
+        if ((p.tls || p.network === 'ws' || p.network === 'grpc') && !p["client-fingerprint"]) {
+          p["client-fingerprint"] = "chrome";
         }
       });
     }
 
-    config["external-controller"] = "0.0.0.0:9090";
-    config["external-ui"] = "ui";
-    config["external-ui-url"] = "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip";
-
     // ==============================================================================
-    // 2. DNS & TUN 配置
+    // 2. 内核功能 (Core)
     // ==============================================================================
     config["tun"] = {
       enable: true,
-      device: "mihomo",
       stack: "mixed",
-      "dns-hijack": ["any:53"],
-      mtu: 1500,
-      "strict-route": true
-    };
-
-    config["dns"] = {
-      enable: true,
-      listen: ":1053",
-      ipv6: true,
-      "enhanced-mode": "fake-ip",
-      "fake-ip-range": "198.18.0.1/16",
-      "respect-rules": true,
-      "fake-ip-filter": [
-        "RULE-SET:Fake-IP-Filter",
-        "+.lan", "+.local", "+.msftconnecttest.com", "+.msftncsi.com",
-        "localhost.ptlogin2.qq.com", "localhost.sec.qq.com",
-        "+.srv.nintendo.net", "+.stun.playstation.net",
-        "xbox.*.microsoft.com", "+.xboxlive.com"
-      ],
-      "default-nameserver": ["223.5.5.5", "119.29.29.29", "2400:3200::1"],
-      "proxy-server-nameserver": ["tls://dns.alidns.com", "tls://dot.pub"],
-      nameserver: ["tls://dns.google", "tls://1.1.1.1"],
-      "nameserver-policy": {
-        "geosite:cn,private,apple-cn,google-cn,category-games@cn": ["tls://dns.alidns.com", "tls://dot.pub"],
-        "geosite:!cn,!private": ["tls://dns.google", "tls://1.1.1.1"]
-      }
+      device: "meta",
+      mtu: 9000,
+      "dns-hijack": ["any:53", "tcp://any:53"],
+      "auto-route": true,
+      "strict-route": true,
+      "auto-redirect": true,
+      "auto-detect-interface": true,
+      "include-android-user": [0, 10]
     };
 
     config["sniffer"] = {
       enable: true,
       "parse-pure-ip": true,
-      "force-dns-mapping": true,
-      "override-destination": true,
       sniff: {
+        TLS: { ports: [443, 8443] },
         HTTP: { ports: [80, "8080-8880"], "override-destination": true },
-        TLS: { ports: [443, 8443] }
-      },
-      "skip-domain": ["+.push.apple.com"]
-    };
-
-    // ==============================================================================
-    // 3. 规则源 (Rule Providers) - Fastly 加速
-    // ==============================================================================
-    var ruleProviderBase = {
-      behavior: "classical",
-      interval: 86400,
-      format: "text",
-      type: "http",
-    };
-
-    var providersDef = {
-      Gemini: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Gemini/Gemini.list", path: "./ruleset/Gemini.list" },
-      Google: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs", path: "./rules/Google.mrs", format: "mrs", type: "http", behavior: "domain" },
-      OpenAi: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/openai.mrs", path: "./rules/OpenAI.mrs", format: "mrs", type: "http", behavior: "domain" },
-      TikTok: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.mrs", path: "./rules/TikTok.mrs", format: "mrs", type: "http", behavior: "domain" },
-      Spotify: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/spotify.mrs", path: "./rules/Spotify.mrs", format: "mrs", type: "http", behavior: "domain" },
-      Discord: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/discord.mrs", path: "./rules/Discord.mrs", format: "mrs", type: "http", behavior: "domain" },
-      Microsoft: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs", path: "./rules/Microsoft.mrs", format: "mrs", type: "http", behavior: "domain" },
-      Speedtest: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Speedtest/Speedtest.list", path: "./ruleset/Speedtest.list" },
-      WeChat: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/WeChat/WeChat.list", path: "./ruleset/WeChat.list" },
-      Direct: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Direct/Direct.list", path: "./ruleset/Direct.list" },
-      ChinaMax: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax.list", path: "./ruleset/ChinaMax.list" },
-      ChinaMedia: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMedia/ChinaMedia.list", path: "./ruleset/ChinaMedia.list" },
-      Download: { url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Download/Download.list", path: "./ruleset/Download.list" },
-      LocalAreaNetwork: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/LocalAreaNetwork.list", path: "./ruleset/LocalAreaNetwork.list" },
-      UnBan: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/UnBan.list", path: "./ruleset/UnBan.list" },
-      BanAD: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanAD.list", path: "./ruleset/BanAD.list" },
-      BanProgramAD: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanProgramAD.list", path: "./ruleset/BanProgramAD.list" },
-      GoogleFCM: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs", path: "./rules/GoogleFCM.mrs", format: "mrs", type: "http", behavior: "domain" },
-      GoogleCN: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/GoogleCN.list", path: "./ruleset/GoogleCN.list" },
-      SteamCN: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/SteamCN.list", path: "./ruleset/SteamCN.list" },
-      Apple: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs", path: "./rules/Apple.mrs", format: "mrs", type: "http", behavior: "domain" },
-      Telegram: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs", path: "./rules/Telegram.mrs", format: "mrs", type: "http", behavior: "domain" },
-      NetEaseMusic: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/NetEaseMusic.list", path: "./ruleset/NetEaseMusic.list" },
-      Epic: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Epic.list", path: "./ruleset/Epic.list" },
-      Origin: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Origin.list", path: "./ruleset/Origin.list" },
-      Sony: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Sony.list", path: "./ruleset/Sony.list" },
-      Steam: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs", path: "./rules/Steam.mrs", format: "mrs", type: "http", behavior: "domain" },
-      Nintendo: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Nintendo.list", path: "./ruleset/Nintendo.list" },
-      YouTube: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs", path: "./rules/YouTube.mrs", format: "mrs", type: "http", behavior: "domain" },
-      Netflix: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs", path: "./rules/Netflix.mrs", format: "mrs", type: "http", behavior: "domain" },
-      Bahamut: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Bahamut.list", path: "./ruleset/Bahamut.list" },
-      BilibiliHMT: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/BilibiliHMT.list", path: "./ruleset/BilibiliHMT.list" },
-      Bilibili: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs", path: "./rules/Bilibili.mrs", format: "mrs", type: "http", behavior: "domain" },
-      ProxyMedia: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyMedia.list", path: "./ruleset/ProxyMedia.list" },
-      ProxyGFWlist: { url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyGFWlist.list", path: "./ruleset/ProxyGFWlist.list" },
-      // New Optimized Providers (MRS)
-      "Fake-IP-Filter": { url: "https://ghfast.top/github.com/DustinWin/ruleset_geodata/raw/refs/heads/mihomo-ruleset/fakeip-filter.mrs", path: "./rules/fakeip-filter.mrs", format: "mrs", type: "http", behavior: "domain" },
-      CN: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs", path: "./rules/CN.mrs", format: "mrs", type: "http", behavior: "domain" },
-      CN_IP: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/cn.mrs", path: "./rules/CN_IP.mrs", format: "mrs", type: "http", behavior: "ipcidr" },
-      Private: { url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", path: "./rules/Private.mrs", format: "mrs", type: "http", behavior: "domain" }
-    };
-
-    var myRuleProviders = {};
-    for (var key in providersDef) {
-      if (Object.prototype.hasOwnProperty.call(providersDef, key)) {
-        myRuleProviders[key] = Object.assign({}, ruleProviderBase, providersDef[key]);
+        QUIC: { ports: [443, 8443] }
       }
-    }
-    config["rule-providers"] = myRuleProviders;
+    };
+
+    config["geox-url"] = {
+      geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat",
+      geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat",
+      mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb",
+      asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+    };
 
     // ==============================================================================
-    // 4. 策略组 (Proxy Groups)
+    // 3. DNS 配置
     // ==============================================================================
+    config["dns"] = {
+      enable: true,
+      listen: ":1053",
+      "use-hosts": true,
+      "enhanced-mode": "fake-ip",
+      "fake-ip-range": "198.18.0.1/16",
+      "respect-rules": true,
+      ipv6: false,
+      nameserver: ["223.5.5.5", "119.29.29.29"],
+      "proxy-server-nameserver": ["223.5.5.5", "119.29.29.29"],
+      "nameserver-policy": {
+        'rule-set:CN,Private,BiliBili,DouYin': ["223.5.5.5", "119.29.29.29"]
+      },
+      fallback: ["https://8.8.8.8/dns-query", "https://1.1.1.1/dns-query"],
+      "fallback-filter": {
+        geoip: true,
+        "geoip-code": "CN",
+        ipcidr: ["240.0.0.0/4"]
+      },
+      "fake-ip-filter": [
+        "+.lan", "+.local", "stun.*", "work.weixin.qq.com", "xbox.*.microsoft.com",
+        "+.battlenet.com.cn", "+.servicewechat.com", "+.tenpay.com", "+.qq.com", "+.music.163.com"
+      ]
+    };
 
-    if (!config.proxies) config.proxies = [];
+    // ==============================================================================
+    // 4. 规则提供者 (Rule Providers)
+    // ==============================================================================
+    config["rule-providers"] = {
+      // Core
+      "Fake-IP-Filter": createProvider("https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/fakeip-filter.mrs", "./rules/fakeip-filter.mrs"),
+      "Private": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", "./rules/Private.mrs"),
+      "NoAds": createProvider("https://testingcf.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml", "./rules/AWAvenue-Ads.yaml", "http", "classical", "yaml"),
+      // CN
+      "ChinaMax": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax.list", "./ruleset/ChinaMax.list", "http", "classical", "text"),
+      "CN": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs", "./rules/CN.mrs"),
+      "CN_IP": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/cn.mrs", "./rules/CN_IP.mrs", "http", "ipcidr", "mrs"),
+      "DouYin": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/douyin.mrs", "./rules/DouYin.mrs"),
+      "BiliBili": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs", "./rules/BiliBili.mrs"),
+      // Media & AI
+      "OpenAI": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.yaml", "./rules/OpenAI.yaml", "http", "classical", "yaml"),
+      "GlobalMedia": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GlobalMedia/GlobalMedia.yaml", "./rules/GlobalMedia.yaml", "http", "classical", "yaml"),
+      "YouTube": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs", "./rules/YouTube.mrs"),
+      "Netflix": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs", "./rules/Netflix.mrs"),
+      "Netflix_IP": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/netflix.mrs", "./rules/Netflix_IP.mrs", "http", "ipcidr", "mrs"),
+      "NetEaseMusic": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/NetEaseMusic/NetEaseMusic.yaml", "./rules/NetEaseMusic.yaml", "http", "classical", "yaml"),
+      "Bahamut": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Bahamut/Bahamut.yaml", "./rules/Bahamut.yaml", "http", "classical", "yaml"),
+      // Gaming
+      "Steam": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Steam/Steam.yaml", "./rules/Steam.yaml", "http", "classical", "yaml"),
+      "Epic": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Epic/Epic.yaml", "./rules/Epic.yaml", "http", "classical", "yaml"),
+      "Origin": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Origin/Origin.yaml", "./rules/Origin.yaml", "http", "classical", "yaml"),
+      "Sony": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Sony/Sony.yaml", "./rules/Sony.yaml", "http", "classical", "yaml"),
+      "Nintendo": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Nintendo/Nintendo.yaml", "./rules/Nintendo.yaml", "http", "classical", "yaml"),
+      // Social
+      "Telegram": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs", "./rules/Telegram.mrs"),
+      "Telegram_IP": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/telegram.mrs", "./rules/Telegram_IP.mrs", "http", "ipcidr", "mrs"),
+      "Microsoft": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs", "./rules/Microsoft.mrs"),
+      "Apple": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs", "./rules/Apple.mrs"),
+      "Apple_IP": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/apple.mrs", "./rules/Apple_IP.mrs", "http", "ipcidr", "mrs"),
+      "GitHub": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs", "./rules/GitHub.mrs"),
+      "GoogleFCM": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs", "./rules/GoogleFCM.mrs"),
+      "Google": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs", "./rules/Google.mrs"),
+      "Google_IP": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/google.mrs", "./rules/Google_IP.mrs", "http", "ipcidr", "mrs"),
+      "ProxyGFWlist": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs", "./rules/GFW.mrs"),
+    };
 
-    var excludeFilter = "(?i)官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|(0\\.\\d+|0)(\\s)*(x|×|倍)|高倍|free|low|公益|低倍";
-    // 定义热门地区关键词 (用于手动切换白名单)
-    var hotRegionsFilter = "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)";
+    // ==============================================================================
+    // 5. 策略组 (Proxy Groups)
+    // ==============================================================================
+    const filterAll = "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|倍|free|low|公益))";
 
-    var groups = [
-      // 🟢 第一梯队：控制中心
-      {
-        name: "节点选择",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
-        type: "select",
-        proxies: [
-          "自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点",
-          "手动切换", "低倍率节点", "其他地区", "DIRECT"
-        ]
-      },
-      {
-        name: "自动选择",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png",
-        type: "url-test",
-        "include-all": true,
-        filter: hotRegionsFilter + "(?!.*(" + excludeFilter + "))",
-        interval: 300,
-        tolerance: 50
-      },
-      {
-        name: "Google/Gemini",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png",
-        type: "select",
-        "include-all": true,
-        filter: "(?i)美国|USA|States|US|🇺🇸|日本|JP|Japan|🇯🇵|台湾|TW|Taiwan|🇹🇼|新加坡|SG|Singapore|🇸🇬|韩国|KR|Korea|🇰🇷|英国|UK|🇬🇧"
-      },
-      {
-        name: "OpenAI",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png",
-        type: "select",
-        proxies: [
-          "Google/Gemini", "美国节点", "日本节点", "新加坡节点",
-          "台湾节点", "韩国节点", "其他地区"
-        ]
-      },
+    // 图标常量 (可选: 进一步提取)
+    const Icons = {
+      Proxy: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
+      Auto: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png",
+      Select: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png",
+      Google: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png",
+      ChatGPT: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png",
+      Emby: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png",
+      YouTube: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png",
+      Netflix: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png",
+      Media: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png",
+      Bahamut: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bahamut.png",
+      Bilibili: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/bilibili.png",
+      Music: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netease_Music.png",
+      Telegram: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
+      Microsoft: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png",
+      Apple: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png",
+      Game: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png",
+      LowRate: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png",
+      HK: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png",
+      JP: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png",
+      US: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png",
+      TW: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png",
+      SG: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png",
+      KR: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png",
+      Global: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
+      Direct: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png",
+      AdBlock: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png",
+      Final: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png",
+      Update: "https://cdn.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
+    };
 
-      // 🟡 第二梯队：流媒体 & 娱乐
-      {
-        name: "Emby",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png",
-        type: "select",
-        "include-all": true,
-        proxies: ["DIRECT"],
-        filter: "(?i)((香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|狮城|🇸🇬|美国|USA|States|US|🇺🇸|韩国|Korea|KR|🇰🇷)|(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍)(?!.*(日本|Japan|JP|🇯🇵))"
-      },
-      {
-        name: "油管视频",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png",
-        type: "select",
-        proxies: [
-          "自动选择", "节点选择", "香港节点", "台湾节点",
-          "新加坡节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
-        ]
-      },
-      {
-        name: "奈飞视频",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png",
-        type: "select",
-        proxies: [
-          "自动选择", "节点选择", "新加坡节点", "香港节点",
-          "台湾节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
-        ]
-      },
-      {
-        name: "国外媒体",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png",
-        type: "select",
-        proxies: [
-          "自动选择", "节点选择", "香港节点", "台湾节点",
-          "新加坡节点", "日本节点", "美国节点", "韩国节点", "低倍率节点", "其他地区"
-        ]
-      },
-      {
-        name: "巴哈姆特",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bahamut.png",
-        type: "select",
-        proxies: ["台湾节点", "节点选择", "自动选择"]
-      },
-      {
-        name: "哔哩哔哩",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/bilibili.png",
-        type: "select",
-        proxies: ["DIRECT", "台湾节点", "香港节点"]
-      },
-      {
-        name: "网易音乐",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netease_Music.png",
-        type: "select",
-        "include-all": true,
-        filter: "(?i)网易|音乐|Music|解锁",
-        proxies: ["DIRECT", "节点选择"]
-      },
+    config["proxy-groups"] = [
+      createGroup("节点选择", "select", Icons.Proxy, ["自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点", "手动切换", "低倍率节点", "其他地区", "DIRECT", "REJECT"]),
+      createGroup("自动选择", "url-test", Icons.Auto, filterAll, { tolerance: 50, interval: 300 }),
+      createGroup("手动切换", "select", Icons.Select, filterAll),
+      createGroup("Google/Gemini", "select", Icons.Google, "(?i)(美国|USA|US|🇺🇸|日本|JP|🇯🇵|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|英国|UK|🇬🇧|加拿大|CA|🇨🇦|法国|FR|🇫🇷|德国|DE|🇩🇪|澳洲|AU|🇦🇺)(?!.*(?i)(官网|流量|测试|更新|到期|重置|倍|free|low))"),
+      createGroup("OpenAI", "select", Icons.ChatGPT, ["Google/Gemini", "美国节点", "日本节点", "新加坡节点", "台湾节点", "韩国节点", "其他地区"]),
 
-      // 🔵 第三梯队：常用服务
-      {
-        name: "电报消息",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
-        type: "url-test",
-        "include-all": true,
-        filter: "(?i)(新加坡|狮城|Singapore|SG|🇸🇬|香港|Hong Kong|HK|🇭🇰|台湾|Taiwan|TW|🇹🇼|日本|Japan|JP|🇯🇵|韩国|Korea|KR|🇰🇷|印度|India|🇮🇳|泰国|Thailand|🇹🇭|越南|Vietnam|🇻🇳|马来西亚|Malaysia|🇲🇾|菲律宾|Philippines|🇵🇭|印尼|Indonesia|ID|🇮🇩|巴基斯坦|Pakistan|孟加拉|Bangladesh)(?!.*(" + excludeFilter + "))",
-        interval: 300,
-        tolerance: 50
-      },
-      {
-        name: "微软服务",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png",
-        type: "select",
-        proxies: ["节点选择", "DIRECT", "美国节点", "香港节点", "台湾节点"]
-      },
-      {
-        name: "苹果服务",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png",
-        type: "select",
-        proxies: ["节点选择", "DIRECT", "美国节点", "香港节点", "台湾节点"]
-      },
-      {
-        name: "谷歌FCM",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png",
-        type: "select",
-        proxies: [
-          "DIRECT", "节点选择", "美国节点", "香港节点", "台湾节点", "日本节点", "新加坡节点"
-        ]
-      },
-      {
-        name: "游戏平台",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png",
-        type: "select",
-        proxies: ["节点选择", "DIRECT", "香港节点", "日本节点", "美国节点"]
-      },
+      createGroup("Emby", "select", Icons.Emby, "(?i)((香港|HK|🇭🇰|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)|free|low|公益|低倍)(?!.*(日本|JP|🇯🇵))", { proxies: ["DIRECT"] }),
+      createGroup("油管视频", "select", Icons.YouTube, ["自动选择", "节点选择", "香港节点", "台湾节点", "新加坡节点", "日本节点", "美国节点", "韩国节点"]),
+      createGroup("奈飞视频", "select", Icons.Netflix, ["自动选择", "节点选择", "新加坡节点", "香港节点", "台湾节点", "日本节点", "美国节点"]),
+      createGroup("国外媒体", "select", Icons.Media, ["自动选择", "节点选择", "香港节点", "台湾节点", "新加坡节点", "日本节点", "美国节点"]),
+      createGroup("巴哈姆特", "select", Icons.Bahamut, ["台湾节点", "节点选择", "自动选择"]),
+      createGroup("哔哩哔哩", "select", Icons.Bilibili, ["DIRECT", "台湾节点", "香港节点"]),
+      createGroup("网易音乐", "select", Icons.Music, ["DIRECT", "节点选择"]),
 
-      // ⚪ 第四梯队：地区与功能仓库
-      {
-        name: "低倍率节点",
-        icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png",
-        type: "select",
-        "include-all": true,
-        filter: "(0\\.\\d+|0)(\\s)*(x|×|倍)|(?i)free|low|公益|低倍"
-      },
-      {
-        name: "高倍率节点",
-        icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/fastcloud.png",
-        type: "select",
-        "include-all": true,
-        filter: "(?i)(([2-9]|\\d{2,})(\\.\\d+)?|1\\.[1-9])\\s*(x|×|倍)|高倍"
-      },
-      // 地区自动测速
-      {
-        name: "香港节点",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png",
-        type: "url-test",
-        "include-all": true,
-        filter: "(?i)(香港|Hong Kong|HK|🇭🇰)(?!.*(" + excludeFilter + "))",
-        interval: 300,
-        tolerance: 50
-      },
-      {
-        name: "日本节点",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png",
-        type: "url-test",
-        "include-all": true,
-        filter: "(?i)(日本|Japan|JP|🇯🇵)(?!.*(" + excludeFilter + "))",
-        interval: 300,
-        tolerance: 50
-      },
-      {
-        name: "美国节点",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png",
-        type: "url-test",
-        "include-all": true,
-        filter: "(?i)(美国|USA|States|US|🇺🇸)(?!.*(" + excludeFilter + "|Australia|澳洲|Austria|Russia|Plus|Music))",
-        interval: 300,
-        tolerance: 50
-      },
-      {
-        name: "台湾节点",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png",
-        type: "url-test",
-        "include-all": true,
-        filter: "(?i)(台湾|Taiwan|TW|🇹🇼)(?!.*(" + excludeFilter + "))",
-        interval: 300,
-        tolerance: 50
-      },
-      {
-        name: "新加坡节点",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png",
-        type: "url-test",
-        "include-all": true,
-        // Filter 保持原样以抓取所有别名
-        filter: "(?i)(新加坡|狮城|Singapore|SG|🇸🇬)(?!.*(" + excludeFilter + "))",
-        interval: 300,
-        tolerance: 50
-      },
-      {
-        name: "韩国节点",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png",
-        type: "url-test",
-        "include-all": true,
-        filter: "(?i)(韩国|Korea|KR|🇰🇷)(?!.*(" + excludeFilter + "))",
-        interval: 300,
-        tolerance: 50
-      },
-      {
-        name: "其他地区",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
-        type: "select",
-        "include-all": true,
-        filter: "^(?!.*((?i)香港|Hong Kong|HK|🇭🇰|日本|Japan|JP|🇯🇵|美国|USA|States|US(?!tralia|tria)|🇺🇸|台湾|Taiwan|TW|🇹🇼|新加坡|Singapore|SG|🇸🇬|韩国|Korea|KR|🇰🇷|" + excludeFilter + ")).*$"
-      },
+      createGroup("电报消息", "url-test", Icons.Telegram, "(?i)(新加坡|SG|🇸🇬|香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|美国|US|🇺🇸)", { tolerance: 50, interval: 300 }),
+      createGroup("微软服务", "select", Icons.Microsoft, ["节点选择", "DIRECT", "美国节点", "香港节点", "台湾节点"]),
+      createGroup("苹果服务", "select", Icons.Apple, ["节点选择", "DIRECT", "美国节点", "香港节点", "台湾节点"]),
+      createGroup("谷歌FCM", "select", Icons.Google, ["DIRECT", "节点选择", "美国节点", "香港节点", "台湾节点", "日本节点", "新加坡节点"]),
+      createGroup("游戏平台", "select", Icons.Game, ["节点选择", "DIRECT", "香港节点", "日本节点", "美国节点"]),
 
-      // 手动切换
-      {
-        name: "手动切换",
-        icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png",
-        type: "select",
-        "include-all": true,
-        filter: hotRegionsFilter + "(?!.*(" + excludeFilter + "))"
-      },
+      createGroup("低倍率节点", "select", Icons.LowRate, "(?i)(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍"),
+      createGroup("香港节点", "url-test", Icons.HK, "(?i)(香港|HK|🇭🇰)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))", { tolerance: 50, interval: 300 }),
+      createGroup("日本节点", "url-test", Icons.JP, "(?i)(日本|JP|🇯🇵)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))", { tolerance: 50, interval: 300 }),
+      createGroup("美国节点", "url-test", Icons.US, "(?i)(美国|USA|US|🇺🇸)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))", { tolerance: 50, interval: 300 }),
+      createGroup("台湾节点", "url-test", Icons.TW, "(?i)(台湾|TW|🇹🇼)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))", { tolerance: 50, interval: 300 }),
+      createGroup("新加坡节点", "url-test", Icons.SG, "(?i)(新加坡|SG|🇸🇬)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))", { tolerance: 50, interval: 300 }),
+      createGroup("韩国节点", "url-test", Icons.KR, "(?i)(韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))", { tolerance: 50, interval: 300 }),
+      createGroup("其他地区", "select", Icons.Global, "^(?!.*((?i)香港|HK|🇭🇰|日本|JP|🇯🇵|美国|US|🇺🇸|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|官网|套餐|流量|测试|更新|到期|重置|倍|free|low)).*$"),
 
-      // 🟣 第五梯队：系统兜底
-      {
-        name: "国内媒体",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/DomesticMedia.png",
-        type: "select",
-        proxies: ["DIRECT", "香港节点", "台湾节点"]
-      },
-      {
-        name: "全球直连",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png",
-        type: "select",
-        proxies: ["DIRECT", "节点选择"]
-      },
-      {
-        name: "广告拦截",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png",
-        type: "select",
-        proxies: ["REJECT", "DIRECT"]
-      },
-      {
-        name: "应用净化",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hijacking.png",
-        type: "select",
-        proxies: ["REJECT", "DIRECT"]
-      },
-      {
-        name: "漏网之鱼",
-        icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png",
-        type: "select",
-        proxies: [
-          "节点选择", "自动选择", "DIRECT", "香港节点", "台湾节点",
-          "日本节点", "美国节点"
-        ]
-      }
+      createGroup("全球直连", "select", Icons.Direct, ["DIRECT", "节点选择"]),
+      createGroup("广告拦截", "select", Icons.AdBlock, ["REJECT", "DIRECT"]),
+      createGroup("漏网之鱼", "select", Icons.Final, ["节点选择", "自动选择", "DIRECT", "香港节点", "台湾节点", "日本节点", "美国节点"]),
+      createGroup("订阅更新", "select", Icons.Update, ["DIRECT", "节点选择"])
     ];
 
-    config["proxy-groups"] = groups;
-
     // ==============================================================================
-    // 5. 分流规则 (Rules)
+    // 6. 分流规则 (Rules)
     // ==============================================================================
-    var rules = [
-      "DST-PORT,123,全球直连",
-
-      // 0. 用户自定义分区
-      "DOMAIN-KEYWORD,pilipili,DIRECT",
-      "DOMAIN-KEYWORD,embyplus,Emby",
-      "DOMAIN-SUFFIX,cdn.bgp.yt,DIRECT",
-      "DOMAIN-SUFFIX,media.nijigem.by,DIRECT",
-      "DOMAIN-SUFFIX,steamtools.net,DIRECT",
-      "DOMAIN-KEYWORD,steamtools,DIRECT",
-      "DOMAIN-SUFFIX,challenges.clouflare.com,节点选择",
-      "DOMAIN,v1.uhdnow.com,DIRECT",
-      "DOMAIN-SUFFIX,rainbowsky.xyz,DIRECT",
-      "DOMAIN,steamcdn-a.akamaihd.net,DIRECT",
-      "DOMAIN-SUFFIX,cm.steampowered.com,DIRECT",
-      "DOMAIN-SUFFIX,steamserver.net,DIRECT",
-
-      // 1. 基础设施
-      "IP-CIDR,192.168.0.0/16,全球直连,no-resolve",
+    config["rules"] = [
+      "IP-CIDR,0.0.0.0/8,全球直连,no-resolve",
       "IP-CIDR,10.0.0.0/8,全球直连,no-resolve",
-      "IP-CIDR,172.16.0.0/12,全球直连,no-resolve",
+      "IP-CIDR,100.64.0.0/10,全球直连,no-resolve",
       "IP-CIDR,127.0.0.0/8,全球直连,no-resolve",
-      "DOMAIN,ntp.aliyun.com,全球直连",
-      "DOMAIN,time.apple.com,全球直连",
-      "DOMAIN,time.windows.com,全球直连",
+      "IP-CIDR,172.16.0.0/12,全球直连,no-resolve",
+      "IP-CIDR,192.168.0.0/16,全球直连,no-resolve",
+      "IP-CIDR,198.18.0.0/15,全球直连,no-resolve",
+      "IP-CIDR,224.0.0.0/4,全球直连,no-resolve",
+      "IP-CIDR6,::1/128,全球直连,no-resolve",
+      "IP-CIDR6,fc00::/7,全球直连,no-resolve",
+      "IP-CIDR6,fe80::/10,全球直连,no-resolve",
+      "DOMAIN-SUFFIX,local,全球直连",
+      "DOMAIN-SUFFIX,lan,全球直连",
+      "RULE-SET,Private,全球直连",
 
-      // 2. 直连优化
-      // 2. 直连优化 (逻辑合并: Private + CN + CN_IP)
-      "RULE-SET,Download,全球直连",
-      "RULE-SET,Direct,全球直连",
-      "OR,((RULE-SET,Private),(RULE-SET,CN),(RULE-SET,CN_IP)),全球直连",
+      "DOMAIN-SUFFIX,steamcontent.com,全球直连",
+      "DOMAIN,steamcdn-a.akamaihd.net,全球直连",
+      "DOMAIN-SUFFIX,cm.steampowered.com,全球直连",
+      "DOMAIN-SUFFIX,steamserver.net,全球直连",
+      "DOMAIN-SUFFIX,steamchina.com,全球直连",
 
-      // 3. 广告拦截
-      "RULE-SET,BanAD,广告拦截",
-      "RULE-SET,BanProgramAD,应用净化",
-
-      // 4. Google & Gemini
-      "RULE-SET,Gemini,Google/Gemini",
+      "DOMAIN-SUFFIX,googlevideo.com,Google/Gemini",
+      "DOMAIN-SUFFIX,gvt1.com,Google/Gemini",
+      "DOMAIN-SUFFIX,xn--ngstr-lra8j.com,Google/Gemini",
+      "DOMAIN,googleapis.cn,Google/Gemini",
+      "DOMAIN,googleapis.com,Google/Gemini",
       "RULE-SET,Google,Google/Gemini",
-      "RULE-SET,GoogleFCM,谷歌FCM",
+      "RULE-SET,Google_IP,Google/Gemini,no-resolve",
 
-      // 5. 热门 APP
-      "RULE-SET,TikTok,国外媒体",
-      "RULE-SET,Spotify,国外媒体",
-      "RULE-SET,Discord,国外媒体",
-      "RULE-SET,OpenAi,OpenAI",
-      "RULE-SET,Microsoft,微软服务",
-      "RULE-SET,Apple,苹果服务",
+      "DOMAIN-KEYWORD,pilipili,全球直连",
+      "DOMAIN-KEYWORD,embyplus,Emby",
+      "DOMAIN-SUFFIX,cdn.bgp.yt,全球直连",
+      "DOMAIN-SUFFIX,media.nijigem.by,全球直连",
+      "DOMAIN-SUFFIX,steamtools.net,全球直连",
+      "DOMAIN-KEYWORD,steamtools,全球直连",
+      "DOMAIN-SUFFIX,challenges.cloudflare.com,节点选择",
+      "DOMAIN,v1.uhdnow.com,全球直连",
+      "DOMAIN-SUFFIX,rainbowsky.xyz,全球直连",
 
-      // 6. 社交与媒体
-      "RULE-SET,Telegram,电报消息",
-      "RULE-SET,NetEaseMusic,网易音乐",
+      "RULE-SET,NoAds,广告拦截",
+
+      "RULE-SET,DouYin,全球直连",
       "RULE-SET,YouTube,油管视频",
       "RULE-SET,Netflix,奈飞视频",
+      "RULE-SET,Netflix_IP,奈飞视频,no-resolve",
       "RULE-SET,Bahamut,巴哈姆特",
-      "RULE-SET,BilibiliHMT,哔哩哔哩",
-      "RULE-SET,Bilibili,哔哩哔哩",
-      "RULE-SET,ProxyMedia,国外媒体",
-      "RULE-SET,ChinaMedia,国内媒体",
+      "RULE-SET,NetEaseMusic,网易音乐",
+      "RULE-SET,BiliBili,哔哩哔哩",
+      "RULE-SET,GlobalMedia,国外媒体",
 
-      // 7. 游戏平台
+      "RULE-SET,OpenAI,OpenAI",
+
+      "RULE-SET,Telegram,电报消息",
+      "RULE-SET,Telegram_IP,电报消息,no-resolve",
+      "RULE-SET,Microsoft,微软服务",
+      "RULE-SET,Apple,苹果服务",
+      "RULE-SET,Apple_IP,苹果服务,no-resolve",
+      "RULE-SET,GoogleFCM,谷歌FCM",
+      "RULE-SET,GitHub,节点选择",
+
+      "RULE-SET,Steam,游戏平台",
       "RULE-SET,Epic,游戏平台",
       "RULE-SET,Origin,游戏平台",
       "RULE-SET,Sony,游戏平台",
-      "RULE-SET,Steam,游戏平台",
       "RULE-SET,Nintendo,游戏平台",
 
-      // 8. 兜底
-      "RULE-SET,Speedtest,全球直连",
       "RULE-SET,ProxyGFWlist,节点选择",
+      "RULE-SET,CN,全球直连",
+      "RULE-SET,CN_IP,全球直连,no-resolve",
       "RULE-SET,ChinaMax,全球直连",
-      "GEOIP,CN,全球直连",
+      "GEOIP,CN,全球直连,no-resolve",
       "MATCH,漏网之鱼"
     ];
 
-    config["rules"] = rules;
-
-    return JSON.parse(JSON.stringify(config));
+    return config;
 
   } catch (e) {
-    console.log("Overwrite Script Error: " + e);
+    console.log("Script Error: " + e);
     return config;
   }
 }
