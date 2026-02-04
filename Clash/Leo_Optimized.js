@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.2 (Clean) | Update: 2026-02-04
+ * Ver 5.9 (Clean) | Update: 2026-02-05
  */
 
 function main(config) {
@@ -108,16 +108,11 @@ function main(config) {
       "fake-ip-range": "198.18.0.1/16",
       "respect-rules": true,
       ipv6: false,
-      nameserver: ["223.5.5.5", "119.29.29.29"],
+      "default-nameserver": ["223.5.5.5", "119.29.29.29"],
+      nameserver: ["https://8.8.8.8/dns-query", "https://1.1.1.1/dns-query"],
       "proxy-server-nameserver": ["223.5.5.5", "119.29.29.29"],
       "nameserver-policy": {
-        'rule-set:CN,Private,BiliBili,DouYin': ["223.5.5.5", "119.29.29.29"]
-      },
-      fallback: ["https://8.8.8.8/dns-query", "https://1.1.1.1/dns-query"],
-      "fallback-filter": {
-        geoip: true,
-        "geoip-code": "CN",
-        ipcidr: ["240.0.0.0/4"]
+        'rule-set:CN,Private': ["223.5.5.5", "119.29.29.29"]
       },
       "fake-ip-filter": [
         "+.lan", "+.local", "stun.*", "work.weixin.qq.com", "xbox.*.microsoft.com",

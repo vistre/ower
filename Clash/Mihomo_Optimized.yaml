@@ -1,5 +1,5 @@
 # Mihomo Configuration | Leo Bennett | Optimized
-# Ver 5.0 | Update: 2026-02-04
+# Ver 5.6 | Update: 2026-02-05
 # Core: Meta | Mode: Rule
 
 # 1. 基础设置
@@ -60,31 +60,26 @@ dns:
   fake-ip-range: 198.18.0.1/16
   respect-rules: true
   ipv6: false
-  
-  # 默认 DNS
+  # 默认 DNS (Foreign DoH)
   nameserver:
+    - https://8.8.8.8/dns-query
+    - https://1.1.1.1/dns-query
+    
+  # 引导 DNS (用于解析 DoH 域名)
+  default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
-    
-  # 代理 DNS
+
+  # 代理 DNS (用于解析节点域名)
   proxy-server-nameserver:
     - 223.5.5.5
     - 119.29.29.29
 
+  # 分流策略
   nameserver-policy:
-    'rule-set:CN,Private,BiliBili,DouYin':
+    'rule-set:CN,Private':
       - 223.5.5.5
       - 119.29.29.29
-
-  # 回退
-  fallback:
-    - https://8.8.8.8/dns-query
-    - https://1.1.1.1/dns-query
-  
-  fallback-filter:
-    geoip: true
-    geoip-code: CN
-    ipcidr: [240.0.0.0/4]
 
   # Fake-IP 过滤
   fake-ip-filter:
