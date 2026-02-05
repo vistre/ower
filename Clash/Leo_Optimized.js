@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.9 (Clean) | Update: 2026-02-05
+ * Ver 5.10 (Clean) | Update: 2026-02-05
  */
 
 function main(config) {
@@ -89,7 +89,12 @@ function main(config) {
         TLS: { ports: [443, 8443] },
         HTTP: { ports: [80, "8080-8880"], "override-destination": true },
         QUIC: { ports: [443, 8443] }
-      }
+      },
+      "skip-domain": [
+        "+.lan",
+        "+.local",
+        "Mijia Cloud"
+      ]
     };
 
     config["geox-url"] = {
