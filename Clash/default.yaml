@@ -1,0 +1,7 @@
+  +rules:
+  - PROCESS-NAME,Biped.exe,DIRECT
+  - PROCESS-NAME,PartyAnimals.exe,DIRECT
+  # --- 新增 Steam 直连规则 ---
+  - DOMAIN,steamcdn-a.akamaihd.net,DIRECT
+  - DOMAIN-SUFFIX,cm.steampowered.com,DIRECT
+  - DOMAIN-SUFFIX,steamserver.net,DIRECT
