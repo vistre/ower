@@ -1,5 +1,5 @@
 # Mihomo Configuration | Leo Bennett | Optimized
-# Ver 5.7 | Update: 2026-02-05
+# Ver 5.8 | Update: 2026-02-14
 # Core: Meta | Mode: Rule
 
 # 1. 基础设置
@@ -30,6 +30,7 @@ experimental:
 
 # 2. 系统接口 & 流量识别
 tun:
+  exclude-uid: [10320,10321,10461,99910320,99910461]
   enable: true
   stack: mixed
   device: meta
@@ -106,6 +107,15 @@ geox-url:
   asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
 
 # 5. 代理提供者
+_anchor:
+  # 仅剔除无效节点（保留所有地区，用于"手动切换"等需要全量节点的组）
+  filter_all: &filter_all "^(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low)).*$"
+  # 仅保留主力地区并剔除无效节点（用于"自动选择"等需要优选的组）
+  filter_main: &filter_main "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))"
+  # 统一引入 proxy1 订阅文件
+  use_provider: &use_all_provider
+    use: [proxy1]
+
 p: &p
   health-check:
     enable: true
@@ -118,13 +128,12 @@ proxy-providers:
   proxy1:
     type: file
     path: proxy_provider/proxy1.yaml
-    <<: *p
-
-# 6. 策略组
-use_all_provider: &use_all_provider
-  use: [proxy1]
-
-filter_all: &filter_all "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|倍|free|low|公益))"
+    health-check:
+      enable: true
+      url: https://cp.cloudflare.com
+      interval: 300
+      timeout: 1000
+      tolerance: 100
 
 proxy-groups:
   # 控制中心
@@ -138,13 +147,13 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     tolerance: 50
     interval: 300
-    filter: *filter_all
+    filter: *filter_main   # 这里已经改成了专用的主力地区过滤器
     <<: *use_all_provider
 
   - name: 手动切换
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png"
-    filter: *filter_all
+    filter: *filter_all    # 手动切换保留了全部地区的节点
     <<: *use_all_provider
 
   - name: Google/Gemini

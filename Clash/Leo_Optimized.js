@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.10 (Clean) | Update: 2026-02-05
+ * Ver 5.11 | Update: 2026-02-15
  */
 
 function main(config) {
@@ -21,7 +21,9 @@ function main(config) {
         group.proxies = proxies_or_filter;
       } else if (typeof proxies_or_filter === "string") {
         group.filter = proxies_or_filter;
-        group["include-all"] = true; // 只要有 filter，通常都开启 include-all
+        // 如果是手动切换，不要 include-all (根据 YAML 逻辑，手动切换虽然 filter 很大，但也可以 include-all)
+        // YAML 中 use_all_provider 对所有组生效
+        group["include-all"] = true;
       }
       return group;
     };
@@ -165,7 +167,10 @@ function main(config) {
     };
 
     // 5. 策略组
-    const filterAll = "(?i)(香港|台湾|日本|新加坡|美国|韩国|🇭🇰|🇹🇼|🇯🇵|🇸🇬|🇺🇸|🇰🇷)(?!.*(?i)(官网|官網|套餐|流量|测试|test|订阅|更新|维护|暂停|通知|超时|到期|剩余|重置|倍|free|low|公益))";
+    // 仅剔除无效节点（保留所有地区，用于"手动切换"等需要全量节点的组）
+    const filterAll = "^(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low)).*$";
+    // 仅保留主力地区并剔除无效节点（用于"自动选择"等需要优选的组）
+    const filterMain = "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))";
 
     const Icons = {
       Proxy: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
@@ -200,7 +205,7 @@ function main(config) {
 
     config["proxy-groups"] = [
       createGroup("节点选择", "select", Icons.Proxy, ["自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点", "手动切换", "低倍率节点", "其他地区", "DIRECT", "REJECT"]),
-      createGroup("自动选择", "url-test", Icons.Auto, filterAll, { tolerance: 50, interval: 300 }),
+      createGroup("自动选择", "url-test", Icons.Auto, filterMain, { tolerance: 50, interval: 300 }),
       createGroup("手动切换", "select", Icons.Select, filterAll),
       createGroup("Google/Gemini", "select", Icons.Google, "(?i)(美国|USA|US|🇺🇸|日本|JP|🇯🇵|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|英国|UK|🇬🇧|加拿大|CA|🇨🇦|法国|FR|🇫🇷|德国|DE|🇩🇪|澳洲|AU|🇦🇺)(?!.*(?i)(官网|流量|测试|更新|到期|重置|倍|free|low))"),
       createGroup("OpenAI", "select", Icons.ChatGPT, ["Google/Gemini", "美国节点", "日本节点", "新加坡节点", "台湾节点", "韩国节点", "其他地区"]),
