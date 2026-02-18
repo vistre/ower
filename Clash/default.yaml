@@ -5,3 +5,7 @@
   - DOMAIN,steamcdn-a.akamaihd.net,DIRECT
   - DOMAIN-SUFFIX,cm.steampowered.com,DIRECT
   - DOMAIN-SUFFIX,steamserver.net,DIRECT
+  - DOMAIN-SUFFIX,steamcontent.com,DIRECT
+  - DOMAIN-SUFFIX,steamstatic.com,DIRECT
+  - DOMAIN-SUFFIX,test.steampowered.com,DIRECT
+##- DOMAIN-SUFFIX,api.steampowered.com,DIRECT 默认注释掉了。当前网络环境api子域名已被污染，直连可能会导致登录时出现通讯失败
