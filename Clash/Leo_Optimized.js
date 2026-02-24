@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.11 | Update: 2026-02-15
+ * Ver 5.13 | Update: 2026-02-24
  */
 
 function main(config) {
@@ -256,20 +256,9 @@ function main(config) {
       "DOMAIN-SUFFIX,lan,全球直连",
       "RULE-SET,Private,全球直连",
 
-      "DOMAIN-SUFFIX,steamcontent.com,全球直连",
-      "DOMAIN,steamcdn-a.akamaihd.net,全球直连",
-      "DOMAIN-SUFFIX,cm.steampowered.com,全球直连",
-      "DOMAIN-SUFFIX,steamserver.net,全球直连",
-      "DOMAIN-SUFFIX,steamchina.com,全球直连",
-
-      "DOMAIN-SUFFIX,googlevideo.com,Google/Gemini",
-      "DOMAIN-SUFFIX,gvt1.com,Google/Gemini",
-      "DOMAIN-SUFFIX,xn--ngstr-lra8j.com,Google/Gemini",
-      "DOMAIN,googleapis.cn,Google/Gemini",
-      "DOMAIN,googleapis.com,Google/Gemini",
-      "RULE-SET,Google,Google/Gemini",
-      "RULE-SET,Google_IP,Google/Gemini,no-resolve",
-
+      // ==========================================
+      // ============ 个人自定义保留区 ============
+      // ==========================================
       "DOMAIN-KEYWORD,pilipili,全球直连",
       "DOMAIN-KEYWORD,embyplus,Emby",
       "DOMAIN-SUFFIX,cdn.bgp.yt,全球直连",
@@ -279,9 +268,36 @@ function main(config) {
       "DOMAIN-SUFFIX,challenges.cloudflare.com,节点选择",
       "DOMAIN,v1.uhdnow.com,全球直连",
       "DOMAIN-SUFFIX,rainbowsky.xyz,全球直连",
+      // ==========================================
+      // ============ 自定义区域结束 ============
+      // ==========================================
 
+      "DOMAIN-SUFFIX,steamcontent.com,全球直连",
+      "DOMAIN,steamcdn-a.akamaihd.net,全球直连",
+      "DOMAIN-SUFFIX,cm.steampowered.com,全球直连",
+      "DOMAIN-SUFFIX,steamserver.net,全球直连",
+      "DOMAIN-SUFFIX,steamchina.com,全球直连",
+      "RULE-SET,GoogleFCM,谷歌FCM",
+      "DOMAIN-SUFFIX,googlevideo.com,Google/Gemini",
+      "DOMAIN-SUFFIX,gvt1.com,Google/Gemini",
+      "DOMAIN-SUFFIX,xn--ngstr-lra8j.com,Google/Gemini",
+      "DOMAIN,googleapis.cn,Google/Gemini",
+      "DOMAIN,googleapis.com,Google/Gemini",
+      "RULE-SET,Google,Google/Gemini",
+      "RULE-SET,Google_IP,Google/Gemini,no-resolve",
       "RULE-SET,NoAds,广告拦截",
-
+      "RULE-SET,OpenAI,OpenAI",
+      "RULE-SET,Telegram,电报消息",
+      "RULE-SET,Telegram_IP,电报消息,no-resolve",
+      "RULE-SET,Microsoft,微软服务",
+      "RULE-SET,Apple,苹果服务",
+      "RULE-SET,Apple_IP,苹果服务,no-resolve",
+      "RULE-SET,GitHub,节点选择",
+      "RULE-SET,Steam,游戏平台",
+      "RULE-SET,Epic,游戏平台",
+      "RULE-SET,Origin,游戏平台",
+      "RULE-SET,Sony,游戏平台",
+      "RULE-SET,Nintendo,游戏平台",
       "RULE-SET,DouYin,全球直连",
       "RULE-SET,YouTube,油管视频",
       "RULE-SET,Netflix,奈飞视频",
@@ -290,23 +306,6 @@ function main(config) {
       "RULE-SET,NetEaseMusic,网易音乐",
       "RULE-SET,BiliBili,哔哩哔哩",
       "RULE-SET,GlobalMedia,国外媒体",
-
-      "RULE-SET,OpenAI,OpenAI",
-
-      "RULE-SET,Telegram,电报消息",
-      "RULE-SET,Telegram_IP,电报消息,no-resolve",
-      "RULE-SET,Microsoft,微软服务",
-      "RULE-SET,Apple,苹果服务",
-      "RULE-SET,Apple_IP,苹果服务,no-resolve",
-      "RULE-SET,GoogleFCM,谷歌FCM",
-      "RULE-SET,GitHub,节点选择",
-
-      "RULE-SET,Steam,游戏平台",
-      "RULE-SET,Epic,游戏平台",
-      "RULE-SET,Origin,游戏平台",
-      "RULE-SET,Sony,游戏平台",
-      "RULE-SET,Nintendo,游戏平台",
-
       "RULE-SET,ProxyGFWlist,节点选择",
       "RULE-SET,CN,全球直连",
       "RULE-SET,CN_IP,全球直连,no-resolve",
