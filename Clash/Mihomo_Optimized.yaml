@@ -606,6 +606,7 @@ rules:
   - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,Google/Gemini
   - DOMAIN,googleapis.cn,Google/Gemini
   - DOMAIN,googleapis.com,Google/Gemini
+  - RULE-SET,GoogleFCM,谷歌FCM
   - RULE-SET,Google,Google/Gemini
   - RULE-SET,Google_IP,Google/Gemini,no-resolve
   - RULE-SET,NoAds,广告拦截
