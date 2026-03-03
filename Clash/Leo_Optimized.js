@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.13 | Update: 2026-02-24
+ * Ver 5.14 | Update: 2026-03-03
  */
 
 function main(config) {

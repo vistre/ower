@@ -1,210 +1,139 @@
-# Mihomo Configuration | Leo Bennett | Optimized
-# Ver 5.14 | Update: 2026-03-03
-# Core: Meta | Mode: Rule
+# Mihomo Overwrite Configuration | Leo Bennett | Optimized
+# Ver 1.0 | Update: 2026-03-03
+# 用于 Clash Verge Rev / Mihomo Party 覆写配置
 
-# 1. 基础设置
-mixed-port: 7890
-redir-port: 9797
-tproxy-port: 9898
-mode: Rule
-bind-address: '*'
-ipv6: false
-allow-lan: true
-unified-delay: false
-log-level: error
-find-process-mode: always
-tcp-concurrent: true
-keep-alive-interval: 30
-external-controller: 0.0.0.0:9090
-external-ui: ./dashboard
-secret: ""
+# 包含的基础内容：
+# - 锚点 (_anchor)
+# - 节点健康检测 (p)
+# - 代理提供者 (proxy-providers)
+# - 策略组 (proxy-groups)
+# - 规则提供者 (rule-providers)
+# - 分流规则 (rules)
 
-profile:
-  store-selected: true
-  store-fake-ip: true
-
-experimental:
-  http-headers:
-    request:
-      - name: "User-Agent"
-        value: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36"
-
-# 2. 系统接口 & 流量识别
-tun:
-  exclude-uid: [10320,10321,10461,99910320,99910461]
-  enable: true
-  stack: mixed
-  device: meta
-  mtu: 9000
-  dns-hijack:
-    - any:53
-    - tcp://any:53
-  auto-route: true
-  strict-route: true
-  auto-redirect: true
-  auto-detect-interface: true
-  include-android-user: [0, 10]
-
-sniffer:
-  enable: true
-  parse-pure-ip: true
-  sniff:
-    TLS: {ports: [443, 8443]}
-    HTTP: {ports: [80, 8080-8880], override-destination: true}
-    QUIC: {ports: [443, 8443]}
-  skip-domain:
-    - '+.lan'
-    - '+.local'
-    - 'Mijia Cloud'
-
-# 3. DNS 设置
-dns:
-  enable: true
-  listen: :1053
-  use-hosts: true
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  respect-rules: true
-  ipv6: false
-  # 默认 DNS (Foreign DoH)
-  nameserver:
-    - https://8.8.8.8/dns-query
-    - https://1.1.1.1/dns-query
-    
-  # 引导 DNS (用于解析 DoH 域名)
-  default-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-
-  # 代理 DNS (用于解析节点域名)
-  proxy-server-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-
-  # 分流策略
-  nameserver-policy:
-    'rule-set:CN,Private':
-      - 223.5.5.5
-      - 119.29.29.29
-
-  # Fake-IP 过滤
-  fake-ip-filter:
-    - "+.lan"
-    - "+.local"
-    - "stun.*"
-    - "work.weixin.qq.com"
-    - "xbox.*.microsoft.com"
-    - "+.battlenet.com.cn"
-    - "+.servicewechat.com"
-    - "+.tenpay.com"
-    - "+.qq.com"
-    - "+.music.163.com"
-
-# 4. 资源路径
-geox-url:
-  geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
-  geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
-  mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
-  asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
-
-# 5. 代理提供者
 _anchor:
   # 仅剔除无效节点（保留所有地区，用于"手动切换"等需要全量节点的组）
   filter_all: &filter_all "^(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low)).*$"
   # 仅保留主力地区并剔除无效节点（用于"自动选择"等需要优选的组）
   filter_main: &filter_main "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))"
-  # 统一引入 proxy1 订阅文件
-  use_provider: &use_all_provider
-    use: [proxy1]
-
-p: &p
-  health-check:
-    enable: true
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    timeout: 5000
-    lazy: true
-
-proxy-providers:
-  proxy1:
-    type: file
-    path: proxy_provider/proxy1.yaml
-    health-check:
-      enable: true
-      url: https://cp.cloudflare.com
-      interval: 300
-      timeout: 1000
-      tolerance: 100
 
 proxy-groups:
   # 控制中心
   - name: 节点选择
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
-    proxies: [自动选择, 香港节点, 台湾节点, 日本节点, 新加坡节点, 美国节点, 手动切换, 低倍率节点, 其他地区, DIRECT, REJECT]
+    proxies:
+      - 自动选择
+      - 香港节点
+      - 台湾节点
+      - 日本节点
+      - 新加坡节点
+      - 美国节点
+      - 手动切换
+      - 低倍率节点
+      - 其他地区
+      - DIRECT
+      - REJECT
 
   - name: 自动选择
     type: url-test
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     tolerance: 50
     interval: 300
-    filter: *filter_main   # 这里已经改成了专用的主力地区过滤器
-    <<: *use_all_provider
+    filter: *filter_main
+    include-all: true
 
   - name: 手动切换
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png"
-    filter: *filter_all    # 手动切换保留了全部地区的节点
-    <<: *use_all_provider
+    filter: *filter_all
+    include-all: true
 
   - name: Google/Gemini
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
     filter: "(?i)(美国|USA|US|🇺🇸|日本|JP|🇯🇵|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|英国|UK|🇬🇧|加拿大|CA|🇨🇦|法国|FR|🇫🇷|德国|DE|🇩🇪|澳洲|AU|🇦🇺)(?!.*(?i)(官网|流量|测试|更新|到期|重置|倍|free|low))"
-    <<: *use_all_provider
+    include-all: true
 
   - name: OpenAI
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
-    proxies: [Google/Gemini, 美国节点, 日本节点, 新加坡节点, 台湾节点, 韩国节点, 其他地区]
+    proxies:
+      - Google/Gemini
+      - 美国节点
+      - 日本节点
+      - 新加坡节点
+      - 台湾节点
+      - 韩国节点
+      - 其他地区
 
   # 流媒体 & 娱乐
   - name: Emby
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
     filter: "(?i)((香港|HK|🇭🇰|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)|free|low|公益|低倍)(?!.*(日本|JP|🇯🇵))"
-    proxies: [DIRECT]
-    <<: *use_all_provider
+    proxies:
+      - DIRECT
+    include-all: true
 
   - name: 油管视频
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png"
-    proxies: [自动选择, 节点选择, 香港节点, 台湾节点, 新加坡节点, 日本节点, 美国节点, 韩国节点]
+    proxies:
+      - 自动选择
+      - 节点选择
+      - 香港节点
+      - 台湾节点
+      - 新加坡节点
+      - 日本节点
+      - 美国节点
+      - 韩国节点
 
   - name: 奈飞视频
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png"
-    proxies: [自动选择, 节点选择, 新加坡节点, 香港节点, 台湾节点, 日本节点, 美国节点]
+    proxies:
+      - 自动选择
+      - 节点选择
+      - 新加坡节点
+      - 香港节点
+      - 台湾节点
+      - 日本节点
+      - 美国节点
 
   - name: 国外媒体
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png"
-    proxies: [自动选择, 节点选择, 香港节点, 台湾节点, 新加坡节点, 日本节点, 美国节点]
+    proxies:
+      - 自动选择
+      - 节点选择
+      - 香港节点
+      - 台湾节点
+      - 新加坡节点
+      - 日本节点
+      - 美国节点
 
   - name: 巴哈姆特
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bahamut.png"
-    proxies: [台湾节点, 节点选择, 自动选择]
+    proxies:
+      - 台湾节点
+      - 节点选择
+      - 自动选择
 
   - name: 哔哩哔哩
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/bilibili.png"
-    proxies: [DIRECT, 台湾节点, 香港节点]
+    proxies:
+      - DIRECT
+      - 台湾节点
+      - 香港节点
 
   - name: 网易音乐
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netease_Music.png"
-    proxies: [DIRECT, 节点选择]
+    proxies:
+      - DIRECT
+      - 节点选择
 
   # 常用服务
   - name: 电报消息
@@ -213,34 +142,56 @@ proxy-groups:
     tolerance: 50
     interval: 300
     filter: "(?i)(新加坡|SG|🇸🇬|香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|美国|US|🇺🇸)"
-    <<: *use_all_provider
+    include-all: true
 
   - name: 微软服务
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png"
-    proxies: [节点选择, DIRECT, 美国节点, 香港节点, 台湾节点]
+    proxies:
+      - 节点选择
+      - DIRECT
+      - 美国节点
+      - 香港节点
+      - 台湾节点
 
   - name: 苹果服务
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png"
-    proxies: [节点选择, DIRECT, 美国节点, 香港节点, 台湾节点]
+    proxies:
+      - 节点选择
+      - DIRECT
+      - 美国节点
+      - 香港节点
+      - 台湾节点
 
   - name: 谷歌FCM
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
-    proxies: [DIRECT, 节点选择, 美国节点, 香港节点, 台湾节点, 日本节点, 新加坡节点]
+    proxies:
+      - DIRECT
+      - 节点选择
+      - 美国节点
+      - 香港节点
+      - 台湾节点
+      - 日本节点
+      - 新加坡节点
 
   - name: 游戏平台
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png"
-    proxies: [节点选择, DIRECT, 香港节点, 日本节点, 美国节点]
+    proxies:
+      - 节点选择
+      - DIRECT
+      - 香港节点
+      - 日本节点
+      - 美国节点
 
   # 地区 & 功能
   - name: 低倍率节点
     type: select
     icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png"
     filter: "(?i)(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍"
-    <<: *use_all_provider
+    include-all: true
   
   - name: 香港节点
     type: url-test
@@ -248,7 +199,7 @@ proxy-groups:
     tolerance: 50
     interval: 300
     filter: "(?i)(香港|HK|🇭🇰)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))"
-    <<: *use_all_provider
+    include-all: true
 
   - name: 日本节点
     type: url-test
@@ -256,7 +207,7 @@ proxy-groups:
     tolerance: 50
     interval: 300
     filter: "(?i)(日本|JP|🇯🇵)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))"
-    <<: *use_all_provider
+    include-all: true
 
   - name: 美国节点
     type: url-test
@@ -264,7 +215,7 @@ proxy-groups:
     tolerance: 50
     interval: 300
     filter: "(?i)(美国|USA|US|🇺🇸)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))"
-    <<: *use_all_provider
+    include-all: true
 
   - name: 台湾节点
     type: url-test
@@ -272,7 +223,7 @@ proxy-groups:
     tolerance: 50
     interval: 300
     filter: "(?i)(台湾|TW|🇹🇼)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))"
-    <<: *use_all_provider
+    include-all: true
 
   - name: 新加坡节点
     type: url-test
@@ -299,24 +250,36 @@ proxy-groups:
   - name: 全球直连
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png"
-    proxies: [DIRECT, 节点选择]
+    proxies:
+      - DIRECT
+      - 节点选择
 
   - name: 广告拦截
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png"
-    proxies: [REJECT, DIRECT]
+    proxies:
+      - REJECT
+      - DIRECT
   
   - name: 漏网之鱼
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png"
-    proxies: [节点选择, 自动选择, DIRECT, 香港节点, 台湾节点, 日本节点, 美国节点]
+    proxies:
+      - 节点选择
+      - 自动选择
+      - DIRECT
+      - 香港节点
+      - 台湾节点
+      - 日本节点
+      - 美国节点
 
   - name: 订阅更新
     type: select
     icon: "https://cdn.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
-    proxies: [DIRECT, 节点选择]
+    proxies:
+      - DIRECT
+      - 节点选择
 
-# 7. 规则提供者
 rule-providers:
   # 核心 & 安全
   Fake-IP-Filter:
@@ -564,7 +527,6 @@ rule-providers:
     path: ./rules/GFW.mrs
     url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs"
 
-# 8. 分流规则
 rules:
   - IP-CIDR,0.0.0.0/8,全球直连,no-resolve
   - IP-CIDR,10.0.0.0/8,全球直连,no-resolve
