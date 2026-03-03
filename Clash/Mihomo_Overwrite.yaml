@@ -231,7 +231,7 @@ proxy-groups:
     tolerance: 50
     interval: 300
     filter: "(?i)(新加坡|SG|🇸🇬)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))"
-    <<: *use_all_provider
+    include-all: true
 
   - name: 韩国节点
     type: url-test
@@ -239,13 +239,13 @@ proxy-groups:
     tolerance: 50
     interval: 300
     filter: "(?i)(韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low))"
-    <<: *use_all_provider
+    include-all: true
 
   - name: 其他地区
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
     filter: "^(?!.*((?i)香港|HK|🇭🇰|日本|JP|🇯🇵|美国|US|🇺🇸|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|官网|套餐|流量|测试|更新|到期|重置|倍|free|low)).*$"
-    <<: *use_all_provider
+    include-all: true
 
   - name: 全球直连
     type: select
