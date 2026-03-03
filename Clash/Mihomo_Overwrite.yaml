@@ -3,12 +3,116 @@
 # 用于 Clash Verge Rev / Mihomo Party 覆写配置
 
 # 包含的基础内容：
+# - 基础核心与高级参数 (Settings, Tun, DNS, Sniffer)
 # - 锚点 (_anchor)
-# - 节点健康检测 (p)
-# - 代理提供者 (proxy-providers)
 # - 策略组 (proxy-groups)
 # - 规则提供者 (rule-providers)
 # - 分流规则 (rules)
+
+# 1. 基础设置
+mixed-port: 7890
+redir-port: 9797
+tproxy-port: 9898
+mode: Rule
+bind-address: '*'
+ipv6: false
+allow-lan: true
+unified-delay: false
+log-level: error
+find-process-mode: always
+tcp-concurrent: true
+keep-alive-interval: 30
+external-controller: 0.0.0.0:9090
+external-ui: ./dashboard
+secret: ""
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+experimental:
+  http-headers:
+    request:
+      - name: "User-Agent"
+        value: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36"
+
+# 2. 系统接口 & 流量识别
+tun:
+  exclude-uid: [10320,10321,10461,99910320,99910461]
+  enable: true
+  stack: mixed
+  device: meta
+  mtu: 9000
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  auto-route: true
+  strict-route: true
+  auto-redirect: true
+  auto-detect-interface: true
+  include-android-user: [0, 10]
+
+sniffer:
+  enable: true
+  parse-pure-ip: true
+  sniff:
+    TLS: {ports: [443, 8443]}
+    HTTP: {ports: [80, 8080-8880], override-destination: true}
+    QUIC: {ports: [443, 8443]}
+  skip-domain:
+    - '+.lan'
+    - '+.local'
+    - 'Mijia Cloud'
+
+# 3. DNS 设置
+dns:
+  enable: true
+  listen: :1053
+  use-hosts: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  respect-rules: true
+  ipv6: false
+  # 默认 DNS (Foreign DoH)
+  nameserver:
+    - https://8.8.8.8/dns-query
+    - https://1.1.1.1/dns-query
+    
+  # 引导 DNS (用于解析 DoH 域名)
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
+  # 代理 DNS (用于解析节点域名)
+  proxy-server-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
+  # 分流策略
+  nameserver-policy:
+    'rule-set:CN,Private':
+      - 223.5.5.5
+      - 119.29.29.29
+
+  # Fake-IP 过滤
+  fake-ip-filter:
+    - "+.lan"
+    - "+.local"
+    - "stun.*"
+    - "work.weixin.qq.com"
+    - "xbox.*.microsoft.com"
+    - "+.battlenet.com.cn"
+    - "+.servicewechat.com"
+    - "+.tenpay.com"
+    - "+.qq.com"
+    - "+.music.163.com"
+
+# 4. 资源路径
+geox-url:
+  geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
+  asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
 
 _anchor:
   # 仅剔除无效节点（保留所有地区，用于"手动切换"等需要全量节点的组）
