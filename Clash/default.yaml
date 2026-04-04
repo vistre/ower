@@ -1,6 +1,7 @@
   +rules:
   - PROCESS-NAME,Biped.exe,DIRECT
   - PROCESS-NAME,PartyAnimals.exe,DIRECT
+  - PROCESS-NAME,NRC-Win64-Shipping.exe,DIRECT
   # --- 新增 Steam 直连规则 ---
   - DOMAIN,steamcdn-a.akamaihd.net,DIRECT
   - DOMAIN-SUFFIX,cm.steampowered.com,DIRECT
