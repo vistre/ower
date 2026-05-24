@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.14 | Update: 2026-03-03
+ * Ver 5.15 | Update: 2026-05-24
  */
 
 function main(config) {
@@ -132,7 +132,7 @@ function main(config) {
       // Core
       "Fake-IP-Filter": createProvider("https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/fakeip-filter.mrs", "./rules/fakeip-filter.mrs"),
       "Private": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", "./rules/Private.mrs"),
-      "NoAds": createProvider("https://testingcf.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml", "./rules/AWAvenue-Ads.yaml", "http", "classical", "yaml"),
+      "NoAds": createProvider("https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs", "./rules/AWAvenue-Ads.mrs", "http", "domain", "mrs"),
       // CN
       "ChinaMax": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax.list", "./ruleset/ChinaMax.list", "http", "classical", "text"),
       "CN": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs", "./rules/CN.mrs"),
@@ -210,10 +210,10 @@ function main(config) {
       createGroup("Google/Gemini", "select", Icons.Google, "(?i)(美国|USA|US|🇺🇸|日本|JP|🇯🇵|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|英国|UK|🇬🇧|加拿大|CA|🇨🇦|法国|FR|🇫🇷|德国|DE|🇩🇪|澳洲|AU|🇦🇺)(?!.*(?i)(官网|流量|测试|更新|到期|重置|倍|free|low))"),
       createGroup("OpenAI", "select", Icons.ChatGPT, ["Google/Gemini", "美国节点", "日本节点", "新加坡节点", "台湾节点", "韩国节点", "其他地区"]),
 
-      createGroup("Emby", "select", Icons.Emby, "(?i)((香港|HK|🇭🇰|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)|free|low|公益|低倍)(?!.*(日本|JP|🇯🇵))", { proxies: ["DIRECT"] }),
-      createGroup("油管视频", "select", Icons.YouTube, ["自动选择", "节点选择", "香港节点", "台湾节点", "新加坡节点", "日本节点", "美国节点", "韩国节点"]),
-      createGroup("奈飞视频", "select", Icons.Netflix, ["自动选择", "节点选择", "新加坡节点", "香港节点", "台湾节点", "日本节点", "美国节点"]),
-      createGroup("国外媒体", "select", Icons.Media, ["自动选择", "节点选择", "香港节点", "台湾节点", "新加坡节点", "日本节点", "美国节点"]),
+      createGroup("Emby", "select", Icons.Emby, "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(日本|JP|🇯🇵))", { proxies: ["DIRECT", "低倍率节点"] }),
+      createGroup("油管视频", "select", Icons.YouTube, ["自动选择", "节点选择", "香港节点", "台湾节点", "新加坡节点", "日本节点", "美国节点", "韩国节点", "低倍率节点"]),
+      createGroup("奈飞视频", "select", Icons.Netflix, ["自动选择", "节点选择", "新加坡节点", "香港节点", "台湾节点", "日本节点", "美国节点", "低倍率节点"]),
+      createGroup("国外媒体", "select", Icons.Media, ["自动选择", "节点选择", "香港节点", "台湾节点", "新加坡节点", "日本节点", "美国节点", "低倍率节点"]),
       createGroup("巴哈姆特", "select", Icons.Bahamut, ["台湾节点", "节点选择", "自动选择"]),
       createGroup("哔哩哔哩", "select", Icons.Bilibili, ["DIRECT", "台湾节点", "香港节点"]),
       createGroup("网易音乐", "select", Icons.Music, ["DIRECT", "节点选择"]),

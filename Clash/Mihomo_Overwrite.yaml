@@ -1,5 +1,5 @@
 # Mihomo Overwrite Configuration | Leo Bennett | Optimized
-# Ver 1.0 | Update: 2026-03-03
+# Ver 1.1 | Update: 2026-05-24
 # 用于 Clash Verge Rev / Mihomo Party 覆写配置
 
 # 包含的基础内容：
@@ -174,9 +174,10 @@ proxy-groups:
   - name: Emby
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
-    filter: "(?i)((香港|HK|🇭🇰|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)|free|low|公益|低倍)(?!.*(日本|JP|🇯🇵))"
+    filter: "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(日本|JP|🇯🇵))"
     proxies:
       - DIRECT
+      - 低倍率节点
     include-all: true
 
   - name: 油管视频
@@ -191,6 +192,7 @@ proxy-groups:
       - 日本节点
       - 美国节点
       - 韩国节点
+      - 低倍率节点
 
   - name: 奈飞视频
     type: select
@@ -203,6 +205,7 @@ proxy-groups:
       - 台湾节点
       - 日本节点
       - 美国节点
+      - 低倍率节点
 
   - name: 国外媒体
     type: select
@@ -215,6 +218,7 @@ proxy-groups:
       - 新加坡节点
       - 日本节点
       - 美国节点
+      - 低倍率节点
 
   - name: 巴哈姆特
     type: select
@@ -404,11 +408,11 @@ rule-providers:
 
   NoAds:
     type: http
-    behavior: classical
-    format: yaml
+    behavior: domain
+    format: mrs
     interval: 86400
-    path: ./rules/AWAvenue-Ads.yaml
-    url: "https://testingcf.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml"
+    path: ./rules/AWAvenue-Ads.mrs
+    url: "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs"
 
   # 国内
   ChinaMax:
