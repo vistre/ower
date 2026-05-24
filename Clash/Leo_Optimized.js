@@ -132,7 +132,7 @@ function main(config) {
       // Core
       "Fake-IP-Filter": createProvider("https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/fakeip-filter.mrs", "./rules/fakeip-filter.mrs"),
       "Private": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", "./rules/Private.mrs"),
-      "NoAds": createProvider("https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs", "./rules/AWAvenue-Ads.mrs", "http", "domain", "mrs"),
+      "NoAds": createProvider("https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs", "./rules/AWAvenue-Ads.mrs"),
       // CN
       "ChinaMax": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax.list", "./ruleset/ChinaMax.list", "http", "classical", "text"),
       "CN": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs", "./rules/CN.mrs"),
