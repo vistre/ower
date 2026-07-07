@@ -391,10 +391,14 @@ rule-providers:
     <<: *IPCIDR
     path: ./rules/BiliBili_IP.mrs
     url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/bilibili.mrs"
+  Steam_CN_域:
+    <<: *Domain
+    path: ./rules/Steam_CN.mrs
+    url: "https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam@cn.mrs"
   Steam_域:
     <<: *Domain
     path: ./rules/Steam.mrs
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs"
+    url: "https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs"
   TikTok_域:
     <<: *Domain
     path: ./rules/TikTok.mrs
@@ -497,6 +501,7 @@ rules:
   - PROCESS-NAME,tv.danmaku.bili,BiliBili
   - RULE-SET,BiliBili_域,BiliBili
   - RULE-SET,BiliBili_IP,BiliBili,no-resolve
+  - RULE-SET,Steam_CN_域,DIRECT
   - RULE-SET,Steam_域,Steam
   - RULE-SET,GitHub_域,GitHub
   - RULE-SET,Discord_域,Discord

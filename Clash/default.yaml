@@ -3,11 +3,6 @@
   - PROCESS-NAME,PartyAnimals.exe,DIRECT
   - PROCESS-NAME,NRC-Win64-Shipping.exe,DIRECT
   - PROCESS-NAME,nrc_launcher.exe,DIRECT
-  # --- 新增 Steam 直连规则 ---
-  - DOMAIN,steamcdn-a.akamaihd.net,DIRECT
-  - DOMAIN-SUFFIX,cm.steampowered.com,DIRECT
-  - DOMAIN-SUFFIX,steamserver.net,DIRECT
-  - DOMAIN-SUFFIX,steamcontent.com,DIRECT
-  - DOMAIN-SUFFIX,steamstatic.com,DIRECT
-  - DOMAIN-SUFFIX,test.steampowered.com,DIRECT
-##- DOMAIN-SUFFIX,api.steampowered.com,DIRECT 默认注释掉了。当前网络环境api子域名已被污染，直连可能会导致登录时出现通讯失败
+  # --- Steam 规则（需配合 Mihomo_Overwrite 的 rule-providers：steam_cn / steam） ---
+  - RULE-SET,steam_cn,DIRECT
+  - RULE-SET,steam,游戏平台

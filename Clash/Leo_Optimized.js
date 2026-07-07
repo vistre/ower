@@ -148,7 +148,8 @@ function main(config) {
       "NetEaseMusic": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/NetEaseMusic/NetEaseMusic.yaml", "./rules/NetEaseMusic.yaml", "http", "classical", "yaml"),
       "Bahamut": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Bahamut/Bahamut.yaml", "./rules/Bahamut.yaml", "http", "classical", "yaml"),
       // Gaming
-      "Steam": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Steam/Steam.yaml", "./rules/Steam.yaml", "http", "classical", "yaml"),
+      "steam_cn": createProvider("https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam@cn.mrs", "./rules/steam_cn.mrs"),
+      "steam": createProvider("https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs", "./rules/steam.mrs"),
       "Epic": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Epic/Epic.yaml", "./rules/Epic.yaml", "http", "classical", "yaml"),
       "Origin": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Origin/Origin.yaml", "./rules/Origin.yaml", "http", "classical", "yaml"),
       "Sony": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Sony/Sony.yaml", "./rules/Sony.yaml", "http", "classical", "yaml"),
@@ -272,11 +273,7 @@ function main(config) {
       // ============ 自定义区域结束 ============
       // ==========================================
 
-      "DOMAIN-SUFFIX,steamcontent.com,全球直连",
-      "DOMAIN,steamcdn-a.akamaihd.net,全球直连",
-      "DOMAIN-SUFFIX,cm.steampowered.com,全球直连",
-      "DOMAIN-SUFFIX,steamserver.net,全球直连",
-      "DOMAIN-SUFFIX,steamchina.com,全球直连",
+      "RULE-SET,steam_cn,全球直连",
       "RULE-SET,GoogleFCM,谷歌FCM",
       "DOMAIN-SUFFIX,googlevideo.com,Google/Gemini",
       "DOMAIN-SUFFIX,gvt1.com,Google/Gemini",
@@ -293,7 +290,7 @@ function main(config) {
       "RULE-SET,Apple,苹果服务",
       "RULE-SET,Apple_IP,苹果服务,no-resolve",
       "RULE-SET,GitHub,节点选择",
-      "RULE-SET,Steam,游戏平台",
+      "RULE-SET,steam,游戏平台",
       "RULE-SET,Epic,游戏平台",
       "RULE-SET,Origin,游戏平台",
       "RULE-SET,Sony,游戏平台",
