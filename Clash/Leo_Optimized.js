@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.15 | Update: 2026-05-24
+ * Ver 5.16 | Update: 2026-07-09
  */
 
 function main(config) {
@@ -256,6 +256,7 @@ function main(config) {
       "DOMAIN-SUFFIX,local,全球直连",
       "DOMAIN-SUFFIX,lan,全球直连",
       "RULE-SET,Private,全球直连",
+      "RULE-SET,NoAds,广告拦截",
 
       // ==========================================
       // ============ 个人自定义保留区 ============
@@ -275,14 +276,8 @@ function main(config) {
 
       "RULE-SET,steam_cn,全球直连",
       "RULE-SET,GoogleFCM,谷歌FCM",
-      "DOMAIN-SUFFIX,googlevideo.com,Google/Gemini",
-      "DOMAIN-SUFFIX,gvt1.com,Google/Gemini",
-      "DOMAIN-SUFFIX,xn--ngstr-lra8j.com,Google/Gemini",
-      "DOMAIN,googleapis.cn,Google/Gemini",
-      "DOMAIN,googleapis.com,Google/Gemini",
       "RULE-SET,Google,Google/Gemini",
       "RULE-SET,Google_IP,Google/Gemini,no-resolve",
-      "RULE-SET,NoAds,广告拦截",
       "RULE-SET,OpenAI,OpenAI",
       "RULE-SET,Telegram,电报消息",
       "RULE-SET,Telegram_IP,电报消息,no-resolve",
@@ -304,8 +299,6 @@ function main(config) {
       "RULE-SET,BiliBili,哔哩哔哩",
       "RULE-SET,GlobalMedia,国外媒体",
       "RULE-SET,ProxyGFWlist,节点选择",
-      "RULE-SET,CN,全球直连",
-      "RULE-SET,CN_IP,全球直连,no-resolve",
       "RULE-SET,ChinaMax,全球直连",
       "GEOIP,CN,全球直连,no-resolve",
       "MATCH,漏网之鱼"
