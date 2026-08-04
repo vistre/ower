@@ -18,7 +18,7 @@
  * [twnocn] 加上此参数，台湾节点将保留 🇹🇼 旗帜，否则默认为 🇨🇳
  */
 
-const inArg = $arguments;
+const inArg = (typeof $arguments !== "undefined" && $arguments) || {};
 const nx = inArg.nx || false;
 const bl = inArg.bl || false;
 const nf = inArg.nf || false;
@@ -390,4 +390,7 @@ function main(config) {
   }
 }
 
-module.exports = { main };
+// 兼容不同脚本环境：Sub-Store 等通过 eval 执行（无 module 对象），Node 环境可用 module.exports
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { main };
+}
