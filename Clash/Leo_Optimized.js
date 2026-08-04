@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.16 | Update: 2026-07-09
+ * Ver 5.17 | Update: 2026-08-04
  */
 
 function main(config) {
@@ -30,7 +30,6 @@ function main(config) {
 
     // 1. 基础设置
     const generalConfig = {
-      "socks-port": 7891,
       "mixed-port": 7890,
       "redir-port": 9797,
       "tproxy-port": 9898,
@@ -38,12 +37,12 @@ function main(config) {
       "ipv6": false,
       "allow-lan": true,
       "bind-address": "*",
-      "unified-delay": false,
-      "log-level": "error",
+      "unified-delay": true,
+      "log-level": "warning",
       "find-process-mode": "always",
       "tcp-concurrent": true,
       "keep-alive-interval": 30,
-      "external-controller": "127.0.0.1:9090",
+      "external-controller": "0.0.0.0:9090",
       "external-ui": "./dashboard",
       "secret": ""
     };
@@ -76,6 +75,7 @@ function main(config) {
       stack: "mixed",
       device: "meta",
       mtu: 9000,
+      "exclude-uid": [10320, 10321, 10461, 99910320, 99910461],
       "dns-hijack": ["any:53", "tcp://any:53"],
       "auto-route": true,
       "strict-route": true,
@@ -123,7 +123,8 @@ function main(config) {
       },
       "fake-ip-filter": [
         "+.lan", "+.local", "stun.*", "work.weixin.qq.com", "xbox.*.microsoft.com",
-        "+.battlenet.com.cn", "+.servicewechat.com", "+.tenpay.com", "+.qq.com", "+.music.163.com"
+        "+.battlenet.com.cn", "+.servicewechat.com", "+.tenpay.com", "+.qq.com", "+.music.163.com",
+        "rule-set:Fake-IP-Filter"
       ]
     };
 
@@ -132,11 +133,10 @@ function main(config) {
       // Core
       "Fake-IP-Filter": createProvider("https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/fakeip-filter.mrs", "./rules/fakeip-filter.mrs"),
       "Private": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", "./rules/Private.mrs"),
-      "NoAds": createProvider("https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs", "./rules/AWAvenue-Ads.mrs"),
+      "NoAds": createProvider("https://testingcf.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.mrs", "./rules/AWAvenue-Ads.mrs"),
       // CN
       "ChinaMax": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax.list", "./ruleset/ChinaMax.list", "http", "classical", "text"),
       "CN": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs", "./rules/CN.mrs"),
-      "CN_IP": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/cn.mrs", "./rules/CN_IP.mrs", "http", "ipcidr", "mrs"),
       "DouYin": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/douyin.mrs", "./rules/DouYin.mrs"),
       "BiliBili": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs", "./rules/BiliBili.mrs"),
       // Media & AI
@@ -148,8 +148,8 @@ function main(config) {
       "NetEaseMusic": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/NetEaseMusic/NetEaseMusic.yaml", "./rules/NetEaseMusic.yaml", "http", "classical", "yaml"),
       "Bahamut": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Bahamut/Bahamut.yaml", "./rules/Bahamut.yaml", "http", "classical", "yaml"),
       // Gaming
-      "steam_cn": createProvider("https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam@cn.mrs", "./rules/steam_cn.mrs"),
-      "steam": createProvider("https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs", "./rules/steam.mrs"),
+      "steam_cn": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam@cn.mrs", "./rules/steam_cn.mrs"),
+      "steam": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs", "./rules/steam.mrs"),
       "Epic": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Epic/Epic.yaml", "./rules/Epic.yaml", "http", "classical", "yaml"),
       "Origin": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Origin/Origin.yaml", "./rules/Origin.yaml", "http", "classical", "yaml"),
       "Sony": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Sony/Sony.yaml", "./rules/Sony.yaml", "http", "classical", "yaml"),
@@ -265,11 +265,11 @@ function main(config) {
       "DOMAIN-KEYWORD,embyplus,Emby",
       "DOMAIN-SUFFIX,cdn.bgp.yt,全球直连",
       "DOMAIN-SUFFIX,media.nijigem.by,全球直连",
-      "DOMAIN-SUFFIX,steamtools.net,全球直连",
       "DOMAIN-KEYWORD,steamtools,全球直连",
       "DOMAIN-SUFFIX,challenges.cloudflare.com,节点选择",
       "DOMAIN,v1.uhdnow.com,全球直连",
       "DOMAIN-SUFFIX,rainbowsky.xyz,全球直连",
+      "DOMAIN-SUFFIX,genshin.biliblili.uk,全球直连",
       // ==========================================
       // ============ 自定义区域结束 ============
       // ==========================================

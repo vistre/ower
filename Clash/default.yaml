@@ -3,6 +3,7 @@
   - PROCESS-NAME,PartyAnimals.exe,DIRECT
   - PROCESS-NAME,NRC-Win64-Shipping.exe,DIRECT
   - PROCESS-NAME,nrc_launcher.exe,DIRECT
+  - DOMAIN-SUFFIX,genshin.biliblili.uk,DIRECT
   # --- Steam 规则（需配合 Mihomo_Overwrite 的 rule-providers：steam_cn / steam） ---
   - RULE-SET,steam_cn,DIRECT
   - RULE-SET,steam,游戏平台

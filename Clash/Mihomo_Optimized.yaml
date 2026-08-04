@@ -1,5 +1,5 @@
 # Mihomo Configuration | Leo Bennett | Optimized
-# Ver 5.16 | Update: 2026-07-09
+# Ver 5.17 | Update: 2026-08-04
 # Core: Meta | Mode: Rule
 
 # 1. 基础设置
@@ -10,8 +10,8 @@ mode: Rule
 bind-address: '*'
 ipv6: false
 allow-lan: true
-unified-delay: false
-log-level: error
+unified-delay: true
+log-level: warning
 find-process-mode: always
 tcp-concurrent: true
 keep-alive-interval: 30
@@ -99,6 +99,7 @@ dns:
     - "+.tenpay.com"
     - "+.qq.com"
     - "+.music.163.com"
+    - "rule-set:Fake-IP-Filter"
 
 # 4. 资源路径
 geox-url:
@@ -116,14 +117,6 @@ _anchor:
   # 统一引入 proxy1 订阅文件
   use_provider: &use_all_provider
     use: [proxy1]
-
-p: &p
-  health-check:
-    enable: true
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    timeout: 5000
-    lazy: true
 
 proxy-providers:
   proxy1:
@@ -341,7 +334,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./rules/AWAvenue-Ads.mrs
-    url: "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs"
+    url: "https://testingcf.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.mrs"
 
   # 国内
   ChinaMax:
@@ -359,14 +352,6 @@ rule-providers:
     interval: 86400
     path: ./rules/CN.mrs
     url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs"
-
-  CN_IP:
-    type: http
-    behavior: ipcidr
-    format: mrs
-    interval: 86400
-    path: ./rules/CN_IP.mrs
-    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/cn.mrs"
 
   DouYin:
     type: http
@@ -448,7 +433,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./rules/steam_cn.mrs
-    url: "https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam@cn.mrs"
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam@cn.mrs"
 
   steam:
     type: http
@@ -456,7 +441,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./rules/steam.mrs
-    url: "https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs"
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs"
     
   Epic:
     type: http
@@ -597,11 +582,11 @@ rules:
   - DOMAIN-KEYWORD,embyplus,Emby
   - DOMAIN-SUFFIX,cdn.bgp.yt,全球直连
   - DOMAIN-SUFFIX,media.nijigem.by,全球直连
-  - DOMAIN-SUFFIX,steamtools.net,全球直连
   - DOMAIN-KEYWORD,steamtools,全球直连
   - DOMAIN-SUFFIX,challenges.cloudflare.com,节点选择
   - DOMAIN,v1.uhdnow.com,全球直连
   - DOMAIN-SUFFIX,rainbowsky.xyz,全球直连
+  - DOMAIN-SUFFIX,genshin.biliblili.uk,全球直连
   # ==========================================
   # ============ 自定义区域结束 ============
   # ==========================================

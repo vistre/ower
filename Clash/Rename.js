@@ -1,5 +1,5 @@
 /**
- * 更新日期：2026-01-13
+ * 更新日期：2026-08-04
  * * 用法：
  * https://.../rename.js#flag&twnocn (如果你想保留🇹🇼旗帜，请加上 &twnocn)
  *
@@ -373,3 +373,21 @@ function fampx(pro) {
   wnout.sort((a, b) => pro.indexOf(a) - pro.indexOf(b));
   return wnout.concat(wis);
 }
+
+/**
+ * Sub-Store 脚本入口
+ * 传入原始订阅配置，对节点进行重命名后返回
+ */
+function main(config) {
+  try {
+    if (Array.isArray(config.proxies)) {
+      config.proxies = operator(config.proxies);
+    }
+    return config;
+  } catch (e) {
+    console.log("Rename Error: " + e);
+    return config;
+  }
+}
+
+module.exports = { main };
