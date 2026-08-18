@@ -305,13 +305,6 @@ proxy-groups:
     filter: "(?i)(「一分」|(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍)"
     include-all: true
 
-  - name: 视频流量
-    type: fallback
-    icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
-    proxies:
-      - 低倍率节点
-      - 自动选择
-
   - name: 香港节点
     type: url-test
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
@@ -696,13 +689,13 @@ rules:
   - RULE-SET,Sony,游戏平台
   - RULE-SET,Nintendo,游戏平台
   - RULE-SET,DouYin,全球直连
-  - RULE-SET,YouTube,视频流量
-  - RULE-SET,Netflix,视频流量
-  - RULE-SET,Netflix_IP,视频流量,no-resolve
+  - RULE-SET,YouTube,油管视频
+  - RULE-SET,Netflix,奈飞视频
+  - RULE-SET,Netflix_IP,奈飞视频,no-resolve
   - RULE-SET,Bahamut,巴哈姆特
   - RULE-SET,NetEaseMusic,网易音乐
   - RULE-SET,BiliBili,哔哩哔哩
-  - RULE-SET,GlobalMedia,视频流量
+  - RULE-SET,GlobalMedia,国外媒体
   - RULE-SET,ProxyGFWlist,节点选择
   - RULE-SET,ChinaMax,全球直连
   - GEOIP,CN,全球直连,no-resolve
