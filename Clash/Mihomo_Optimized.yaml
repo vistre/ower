@@ -1,5 +1,5 @@
 # Mihomo Configuration | Leo Bennett | Optimized
-# Ver 5.17 | Update: 2026-08-04
+# Ver 5.18 | Update: 2026-08-18
 # Core: Meta | Mode: Rule
 
 # 1. 基础设置
@@ -201,9 +201,11 @@ proxy-groups:
 
   # 常用服务
   - name: 电报消息
-    type: fallback
+    type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
+    filter: "(?i)(新加坡|SG|🇸🇬)"
     proxies: [低倍率节点, 自动选择]
+    <<: *use_all_provider
 
   - name: 微软服务
     type: select

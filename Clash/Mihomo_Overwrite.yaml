@@ -1,5 +1,5 @@
 # Mihomo Overwrite Configuration | Leo Bennett | Optimized
-# Ver 1.3 | Update: 2026-08-04
+# Ver 1.4 | Update: 2026-08-18
 # 用于 Clash Verge Rev / Mihomo Party 覆写配置
 
 # 包含的基础内容：
@@ -246,11 +246,13 @@ proxy-groups:
 
   # 常用服务
   - name: 电报消息
-    type: fallback
+    type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
+    filter: "(?i)(新加坡|SG|🇸🇬)"
     proxies:
       - 低倍率节点
       - 自动选择
+    include-all: true
 
   - name: 微软服务
     type: select
