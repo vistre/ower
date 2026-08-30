@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.18 | Update: 2026-08-18
+ * Ver 5.19 | Update: 2026-08-30
  */
 
 function main(config) {
@@ -169,9 +169,9 @@ function main(config) {
 
     // 5. 策略组
     // 仅剔除无效节点（保留所有地区，用于"手动切换"等需要全量节点的组）
-    const filterAll = "^(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×)).*$";
+    const filterAll = "^(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×)).*$";
     // 仅保留主力地区并剔除无效节点（用于"自动选择"等需要优选的组）
-    const filterMain = "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))";
+    const filterMain = "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))";
 
     const Icons = {
       Proxy: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
@@ -208,7 +208,7 @@ function main(config) {
       createGroup("节点选择", "select", Icons.Proxy, ["自动选择", "香港节点", "台湾节点", "日本节点", "新加坡节点", "美国节点", "手动切换", "低倍率节点", "其他地区", "DIRECT", "REJECT"]),
       createGroup("自动选择", "url-test", Icons.Auto, filterMain, { tolerance: 50, interval: 300 }),
       createGroup("手动切换", "select", Icons.Select, filterAll),
-      createGroup("Google/Gemini", "select", Icons.Google, "(?i)(美国|USA|US|🇺🇸|日本|JP|🇯🇵|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|英国|UK|🇬🇧|加拿大|CA|🇨🇦|法国|FR|🇫🇷|德国|DE|🇩🇪|澳洲|AU|🇦🇺)(?!.*(?i)(官网|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"),
+      createGroup("Google/Gemini", "select", Icons.Google, "(?i)(美国|USA|US|🇺🇸|日本|JP|🇯🇵|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|英国|UK|🇬🇧|加拿大|CA|🇨🇦|法国|FR|🇫🇷|德国|DE|🇩🇪|澳洲|AU|🇦🇺)(?!.*(?i)(官网|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"),
       createGroup("OpenAI", "select", Icons.ChatGPT, ["Google/Gemini", "美国节点", "日本节点", "新加坡节点", "台湾节点", "韩国节点", "其他地区"]),
 
       createGroup("Emby", "select", Icons.Emby, "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(日本|JP|🇯🇵))", { proxies: ["DIRECT", "低倍率节点"] }),
@@ -226,13 +226,13 @@ function main(config) {
       createGroup("游戏平台", "select", Icons.Game, ["节点选择", "DIRECT", "香港节点", "日本节点", "美国节点"]),
 
       createGroup("低倍率节点", "url-test", Icons.LowRate, "(?i)(\\[Kitty\\]|(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍)", { tolerance: 50, interval: 300 }),
-      createGroup("香港节点", "url-test", Icons.HK, "(?i)(香港|HK|🇭🇰)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
-      createGroup("日本节点", "url-test", Icons.JP, "(?i)(日本|JP|🇯🇵)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
-      createGroup("美国节点", "url-test", Icons.US, "(?i)(美国|USA|US|🇺🇸)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
-      createGroup("台湾节点", "url-test", Icons.TW, "(?i)(台湾|TW|🇹🇼)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
-      createGroup("新加坡节点", "url-test", Icons.SG, "(?i)(新加坡|SG|🇸🇬)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
-      createGroup("韩国节点", "url-test", Icons.KR, "(?i)(韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
-      createGroup("其他地区", "select", Icons.Global, "^(?!.*((?i)香港|HK|🇭🇰|日本|JP|🇯🇵|美国|US|🇺🇸|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×)).*$"),
+      createGroup("香港节点", "url-test", Icons.HK, "(?i)(香港|HK|🇭🇰)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
+      createGroup("日本节点", "url-test", Icons.JP, "(?i)(日本|JP|🇯🇵)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
+      createGroup("美国节点", "url-test", Icons.US, "(?i)(美国|USA|US|🇺🇸)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
+      createGroup("台湾节点", "url-test", Icons.TW, "(?i)(台湾|TW|🇹🇼)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
+      createGroup("新加坡节点", "url-test", Icons.SG, "(?i)(新加坡|SG|🇸🇬)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
+      createGroup("韩国节点", "url-test", Icons.KR, "(?i)(韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))", { tolerance: 50, interval: 300 }),
+      createGroup("其他地区", "select", Icons.Global, "^(?!.*((?i)香港|HK|🇭🇰|日本|JP|🇯🇵|美国|US|🇺🇸|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×)).*$"),
 
       createGroup("全球直连", "select", Icons.Direct, ["DIRECT", "节点选择"]),
       createGroup("广告拦截", "select", Icons.AdBlock, ["REJECT", "DIRECT"]),

@@ -1,5 +1,5 @@
 # Mihomo Configuration | Leo Bennett | Optimized
-# Ver 5.18 | Update: 2026-08-18
+# Ver 5.19 | Update: 2026-08-30
 # Core: Meta | Mode: Rule
 
 # 1. 基础设置
@@ -111,9 +111,9 @@ geox-url:
 # 5. 代理提供者
 _anchor:
   # 仅剔除无效节点（保留所有地区，用于"手动切换"等需要全量节点的组）
-  filter_all: &filter_all "^(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×)).*$"
+  filter_all: &filter_all "^(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×)).*$"
   # 仅保留主力地区并剔除无效节点（用于"自动选择"等需要优选的组）
-  filter_main: &filter_main "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"
+  filter_main: &filter_main "(?i)(香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|新加坡|SG|🇸🇬|美国|US|🇺🇸|韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"
   # 统一引入 proxy1 订阅文件
   use_provider: &use_all_provider
     use: [proxy1]
@@ -153,7 +153,7 @@ proxy-groups:
   - name: Google/Gemini
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
-    filter: "(?i)(美国|USA|US|🇺🇸|日本|JP|🇯🇵|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|英国|UK|🇬🇧|加拿大|CA|🇨🇦|法国|FR|🇫🇷|德国|DE|🇩🇪|澳洲|AU|🇦🇺)(?!.*(?i)(官网|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"
+    filter: "(?i)(美国|USA|US|🇺🇸|日本|JP|🇯🇵|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|英国|UK|🇬🇧|加拿大|CA|🇨🇦|法国|FR|🇫🇷|德国|DE|🇩🇪|澳洲|AU|🇦🇺)(?!.*(?i)(官网|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"
     <<: *use_all_provider
 
   - name: OpenAI
@@ -241,7 +241,7 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
     tolerance: 50
     interval: 300
-    filter: "(?i)(香港|HK|🇭🇰)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"
+    filter: "(?i)(香港|HK|🇭🇰)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"
     <<: *use_all_provider
 
   - name: 日本节点
@@ -249,7 +249,7 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
     tolerance: 50
     interval: 300
-    filter: "(?i)(日本|JP|🇯🇵)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"
+    filter: "(?i)(日本|JP|🇯🇵)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"
     <<: *use_all_provider
 
   - name: 美国节点
@@ -257,7 +257,7 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
     tolerance: 50
     interval: 300
-    filter: "(?i)(美国|USA|US|🇺🇸)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"
+    filter: "(?i)(美国|USA|US|🇺🇸)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"
     <<: *use_all_provider
 
   - name: 台湾节点
@@ -265,7 +265,7 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
     tolerance: 50
     interval: 300
-    filter: "(?i)(台湾|TW|🇹🇼)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"
+    filter: "(?i)(台湾|TW|🇹🇼)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"
     <<: *use_all_provider
 
   - name: 新加坡节点
@@ -273,7 +273,7 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
     tolerance: 50
     interval: 300
-    filter: "(?i)(新加坡|SG|🇸🇬)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"
+    filter: "(?i)(新加坡|SG|🇸🇬)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"
     <<: *use_all_provider
 
   - name: 韩国节点
@@ -281,13 +281,13 @@ proxy-groups:
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png"
     tolerance: 50
     interval: 300
-    filter: "(?i)(韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×))"
+    filter: "(?i)(韩国|KR|🇰🇷)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))"
     <<: *use_all_provider
 
   - name: 其他地区
     type: select
     icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
-    filter: "^(?!.*((?i)香港|HK|🇭🇰|日本|JP|🇯🇵|美国|US|🇺🇸|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|官网|套餐|流量|测试|更新|到期|重置|倍|free|low|\\[Kitty\\]|0\\.\\d+×)).*$"
+    filter: "^(?!.*((?i)香港|HK|🇭🇰|日本|JP|🇯🇵|美国|US|🇺🇸|台湾|TW|🇹🇼|新加坡|SG|🇸🇬|韩国|KR|🇰🇷|官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×)).*$"
     <<: *use_all_provider
 
   - name: 全球直连
