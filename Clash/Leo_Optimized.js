@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.20 | Update: 2026-09-13
+ * Ver 5.21 | Update: 2026-09-13
  */
 
 function main(config) {
@@ -95,7 +95,7 @@ function main(config) {
       geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat",
       geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat",
       mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb",
-      asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+      asn: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"
     };
 
     // 3. DNS 配置
@@ -182,7 +182,7 @@ function main(config) {
       Microsoft: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png",
       Apple: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png",
       Game: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png",
-      LowRate: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png",
+      LowRate: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/categorypig.png",
       HK: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png",
       JP: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png",
       US: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png",
@@ -193,7 +193,7 @@ function main(config) {
       Direct: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png",
       AdBlock: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png",
       Final: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png",
-      Update: "https://cdn.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
+      Update: "https://testingcf.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
     };
 
     config["proxy-groups"] = [

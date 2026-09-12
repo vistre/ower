@@ -1,5 +1,5 @@
 # Mihomo Overwrite Configuration | Leo Bennett | Optimized
-# Ver 1.6 | Update: 2026-09-13
+# Ver 1.7 | Update: 2026-09-13
 # 用于 Clash Verge Rev / Mihomo Party 覆写配置
 
 # 包含的基础内容：
@@ -107,7 +107,7 @@ geox-url:
   geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
   geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
   mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
-  asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+  asn: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"
 
 _anchor:
   # 仅剔除无效节点（保留所有地区，用于"手动切换"等需要全量节点的组）
@@ -293,7 +293,7 @@ proxy-groups:
   # 地区 & 功能
   - name: 低倍率节点
     type: url-test
-    icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png"
+    icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/categorypig.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(\\[Kitty\\]|(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍)"
@@ -381,7 +381,7 @@ proxy-groups:
 
   - name: 订阅更新
     type: select
-    icon: "https://cdn.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
+    icon: "https://testingcf.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
     proxies:
       - DIRECT
       - 节点选择

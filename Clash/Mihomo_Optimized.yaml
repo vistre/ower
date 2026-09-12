@@ -1,5 +1,5 @@
 # Mihomo Configuration | Leo Bennett | Optimized
-# Ver 5.20 | Update: 2026-09-13
+# Ver 5.21 | Update: 2026-09-13
 # Core: Meta | Mode: Rule
 
 # 1. 基础设置
@@ -100,7 +100,7 @@ geox-url:
   geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
   geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
   mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
-  asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+  asn: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"
 
 # 5. 代理提供者
 _anchor:
@@ -224,7 +224,7 @@ proxy-groups:
   # 地区 & 功能
   - name: 低倍率节点
     type: url-test
-    icon: "https://raw.githubusercontent.com/shindgewongxj/WHATSINStash/master/icon/categorypig.png"
+    icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/categorypig.png"
     tolerance: 50
     interval: 300
     filter: "(?i)(\\[Kitty\\]|(0\\.\\d+|0)(\\s)*(x|×|倍)|free|low|公益|低倍)"
@@ -301,7 +301,7 @@ proxy-groups:
 
   - name: 订阅更新
     type: select
-    icon: "https://cdn.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
+    icon: "https://testingcf.jsdelivr.net/gh/GitMetaio/Surfing@main/app/icon/Update.svg"
     proxies: [DIRECT, 节点选择]
 
 # 7. 规则提供者
