@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.19 | Update: 2026-08-30
+ * Ver 5.20 | Update: 2026-09-13
  */
 
 function main(config) {
@@ -39,10 +39,10 @@ function main(config) {
       "bind-address": "*",
       "unified-delay": true,
       "log-level": "warning",
-      "find-process-mode": "always",
+      "find-process-mode": "strict",
       "tcp-concurrent": true,
       "keep-alive-interval": 30,
-      "external-controller": "0.0.0.0:9090",
+      "external-controller": "127.0.0.1:9090",
       "external-ui": "./dashboard",
       "secret": ""
     };
@@ -51,14 +51,6 @@ function main(config) {
     if (!config.profile) config.profile = {};
     config.profile["store-selected"] = true;
     config.profile["store-fake-ip"] = true;
-
-    if (!config.experimental) config.experimental = {};
-    config.experimental["http-headers"] = {
-      "request": [{
-        "name": "User-Agent",
-        "value": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36"
-      }]
-    };
 
     // 手动添加指纹
     if (Array.isArray(config.proxies)) {

@@ -1,5 +1,5 @@
 # Mihomo Overwrite Configuration | Leo Bennett | Optimized
-# Ver 1.5 | Update: 2026-08-30
+# Ver 1.6 | Update: 2026-09-13
 # 用于 Clash Verge Rev / Mihomo Party 覆写配置
 
 # 包含的基础内容：
@@ -19,22 +19,16 @@ ipv6: false
 allow-lan: true
 unified-delay: true
 log-level: warning
-find-process-mode: always
+find-process-mode: strict
 tcp-concurrent: true
 keep-alive-interval: 30
-external-controller: 0.0.0.0:9090
+external-controller: 127.0.0.1:9090
 external-ui: ./dashboard
 secret: ""
 
 profile:
   store-selected: true
   store-fake-ip: true
-
-experimental:
-  http-headers:
-    request:
-      - name: "User-Agent"
-        value: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36"
 
 # 2. 系统接口 & 流量识别
 tun:
