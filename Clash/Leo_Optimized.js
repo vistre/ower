@@ -262,6 +262,7 @@ function main(config) {
       "DOMAIN,v1.uhdnow.com,全球直连",
       "DOMAIN-SUFFIX,rainbowsky.xyz,全球直连",
       "DOMAIN-SUFFIX,genshin.biliblili.uk,全球直连",
+      "DOMAIN-SUFFIX,l5okyats-2lruf01f.biliblili.uk,全球直连",
       // ==========================================
       // ============ 自定义区域结束 ============
       // ==========================================
