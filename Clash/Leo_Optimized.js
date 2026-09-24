@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.21 | Update: 2026-09-13
+ * Ver 5.22 | Update: 2026-09-13
  */
 
 function main(config) {
@@ -211,7 +211,7 @@ function main(config) {
       createGroup("哔哩哔哩", "select", Icons.Bilibili, ["DIRECT", "台湾节点", "香港节点"]),
       createGroup("网易音乐", "select", Icons.Music, ["DIRECT", "节点选择"]),
 
-      createGroup("电报消息", "select", Icons.Telegram, "(?i)(新加坡|SG|🇸🇬)", { proxies: ["低倍率节点", "自动选择"] }),
+      createGroup("电报消息", "select", Icons.Telegram, "(?i)(新加坡|SG|🇸🇬|香港|HK|🇭🇰|台湾|TW|🇹🇼|日本|JP|🇯🇵|韩国|KR|🇰🇷|马来|MY|🇲🇾|泰国|TH|🇹🇭|越南|VN|🇻🇳|印尼|ID|🇮🇩|菲律宾|PH|🇵🇭)(?!.*(官网|套餐|流量|测试|更新|到期|重置|倍|free|low|0\\.\\d+×))", { proxies: ["低倍率节点", "自动选择"] }),
       createGroup("微软服务", "select", Icons.Microsoft, ["节点选择", "DIRECT", "美国节点", "香港节点", "台湾节点"]),
       createGroup("苹果服务", "select", Icons.Apple, ["节点选择", "DIRECT", "美国节点", "香港节点", "台湾节点"]),
       createGroup("谷歌FCM", "select", Icons.Google, ["DIRECT", "节点选择", "美国节点", "香港节点", "台湾节点", "日本节点", "新加坡节点"]),
