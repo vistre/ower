@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.22 | Update: 2026-09-13
+ * Ver 5.23 | Update: 2026-09-13
  */
 
 function main(config) {
@@ -140,6 +140,7 @@ function main(config) {
       "NetEaseMusic": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/NetEaseMusic/NetEaseMusic.yaml", "./rules/NetEaseMusic.yaml", "http", "classical", "yaml"),
       "Bahamut": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Bahamut/Bahamut.yaml", "./rules/Bahamut.yaml", "http", "classical", "yaml"),
       // Gaming
+      "SteamCN": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/SteamCN/SteamCN.list", "./rules/SteamCN.list", "http", "classical", "text"),
       "steam_cn": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam@cn.mrs", "./rules/steam_cn.mrs"),
       "steam": createProvider("https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs", "./rules/steam.mrs"),
       "Epic": createProvider("https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Epic/Epic.yaml", "./rules/Epic.yaml", "http", "classical", "yaml"),
@@ -267,6 +268,7 @@ function main(config) {
       // ============ 自定义区域结束 ============
       // ==========================================
 
+      "RULE-SET,SteamCN,全球直连",
       "RULE-SET,steam_cn,全球直连",
       "RULE-SET,GoogleFCM,谷歌FCM",
       "RULE-SET,Google,Google/Gemini",

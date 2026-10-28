@@ -1,5 +1,5 @@
 # Mihomo Overwrite Configuration | Leo Bennett | Optimized
-# Ver 1.8 | Update: 2026-09-13
+# Ver 1.9 | Update: 2026-09-13
 # 用于 Clash Verge Rev / Mihomo Party 覆写配置
 
 # 包含的基础内容：
@@ -503,6 +503,14 @@ rule-providers:
     url: "https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Bahamut/Bahamut.yaml"
 
   # 游戏
+  SteamCN:
+    type: http
+    behavior: classical
+    format: text
+    interval: 86400
+    path: ./rules/SteamCN.list
+    url: "https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/SteamCN/SteamCN.list"
+
   steam_cn:
     type: http
     behavior: domain
@@ -667,6 +675,7 @@ rules:
   # ============ 自定义区域结束 ============
   # ==========================================
 
+  - RULE-SET,SteamCN,全球直连
   - RULE-SET,steam_cn,全球直连
   - RULE-SET,GoogleFCM,谷歌FCM
   - RULE-SET,Google,Google/Gemini
