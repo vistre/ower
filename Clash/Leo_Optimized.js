@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.24 | Update: 2026-10-31
+ * Ver 5.25 | Update: 2026-10-31
  */
 
 function main(config) {
@@ -73,6 +73,14 @@ function main(config) {
       "strict-route": true,
       "auto-redirect": true,
       "auto-detect-interface": true,
+      // 路由层直接排除内网/保留网段（不进 TUN 网卡）；198.18.0.0/15 是 fake-ip 段必须留在 TUN 内，故不排除
+      "route-exclude-address": [
+        "0.0.0.0/8", "10.0.0.0/8", "100.64.0.0/10", "127.0.0.0/8",
+        "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.2.0/24",
+        "192.88.99.0/24", "192.168.0.0/16", "198.51.100.0/24", "203.0.113.0/24",
+        "224.0.0.0/4", "240.0.0.0/4", "255.255.255.255/32",
+        "::1/128", "fc00::/7", "fe80::/10"
+      ],
       "include-android-user": [0, 10]
     };
 
