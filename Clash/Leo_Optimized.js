@@ -1,7 +1,7 @@
 /**
  * Mihomo Configuration Script
  * Leo Bennett | Optimized
- * Ver 5.23 | Update: 2026-09-13
+ * Ver 5.24 | Update: 2026-10-31
  */
 
 function main(config) {
@@ -235,6 +235,8 @@ function main(config) {
 
     // 6. 分流规则
     config["rules"] = [
+      // 内置局域网匹配（GEOIP lan，无需下载 mmdb，兜底全部私网/链路本地 IP）
+      "GEOIP,lan,全球直连,no-resolve",
       "IP-CIDR,0.0.0.0/8,全球直连,no-resolve",
       "IP-CIDR,10.0.0.0/8,全球直连,no-resolve",
       "IP-CIDR,100.64.0.0/10,全球直连,no-resolve",
